@@ -1,0 +1,178 @@
+/* Layout da análise de concursos. Os módulos de produtores e selos mantêm seus estilos. */
+#conteudoPrincipal { padding: 16px 26px 28px; min-width: 0; }
+#conteudoPrincipal > div { min-width: 0; }
+#conteudoPrincipal > div > header { gap: 18px; }
+#paginaAnalise { --analise-marrom: #58361f; --analise-borda: #eadfd3; }
+#paginaAnalise button:focus-visible, #paginaAnalise select:focus-visible, #paginaAnalise input:focus-visible {
+    outline: 2px solid #bd864c; outline-offset: 3px;
+}
+#paginaAnalise .analise-filtros {
+    display: grid; grid-template-columns: minmax(180px, 1.6fr) minmax(400px, 1.4fr);
+    gap: 10px; margin: 12px 0 16px; padding: 0; border: 0; background: none; box-shadow: none; backdrop-filter: none;
+}
+.analise-filtros > div { width: 100%; min-width: 0; }
+#paginaAnalise .analise-filtros > div:first-child {
+    position: relative; background: #fff; border: 1px solid var(--analise-borda); border-radius: 10px;
+}
+.analise-filtros > div:first-child::before {
+    content: ''; position: absolute; width: 12px; height: 12px; border: 2px solid #a69a8d; border-radius: 50%; top: 15px; left: 17px; pointer-events: none;
+}
+.analise-filtros > div:first-child::after {
+    content: ''; position: absolute; width: 6px; height: 2px; background: #a69a8d; top: 27px; left: 28px; transform: rotate(45deg); pointer-events: none;
+}
+#paginaAnalise #campoBusca { min-height: 46px; padding-left: 44px !important; font-size: 12px; }
+#paginaAnalise #filtroCategoria, #paginaAnalise #filtroMunicipio {
+    width: 100%; min-width: 0; min-height: 46px; padding: 10px 28px 10px 12px !important;
+    border: 1px solid var(--analise-borda); border-radius: 10px; background-color: #fff; font-size: 12px;
+}
+.analise-filtros > div:last-child { display: grid; grid-template-columns: 1fr 1fr auto; gap: 8px; }
+#paginaAnalise #btnFiltrosAvancados { background: #382316; border-radius: 10px; font-size: 12px; padding: 10px 16px !important; }
+.analise-indicadores { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px; margin-bottom: 16px; }
+.analise-indicador {
+    display: flex; align-items: center; gap: 16px; min-width: 0; min-height: 100px; padding: 18px;
+    background: #fffdfb; border: 1px solid var(--analise-borda); border-radius: 12px; box-shadow: 0 5px 16px #603b1705;
+}
+.indicador-icone { display: grid; place-items: center; flex-shrink: 0; width: 54px; height: 54px; border-radius: 12px; background: #fbf0e4; color: #995321; }
+.indicador-icone svg { width: 28px; height: 28px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+.analise-indicador > div { min-width: 0; }
+.analise-indicador h2 { margin: 0 0 5px; color: #795136; font-size: 10px; font-weight: 750; text-transform: uppercase; letter-spacing: .7px; }
+.analise-indicador strong { color: #1f1c19; font-size: clamp(24px, 2vw, 32px); line-height: 1; font-weight: 750; font-variant-numeric: tabular-nums; }
+.analise-indicador p { margin: 6px 0 0; color: #948b81; font-size: 10px; line-height: 1.4; overflow-wrap: anywhere; }
+.indicador-verde .indicador-icone { background: #e8f5ed; color: #13815d; }
+.indicador-ouro .indicador-icone { background: #fff4df; color: #bb7715; }
+#paginaAnalise .analise-graficos { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.2fr); gap: 16px; margin-bottom: 16px !important; }
+#paginaAnalise .analise-card { padding: 16px; min-width: 0; border-radius: 12px; border-color: var(--analise-borda); background: #fffefd; box-shadow: 0 5px 20px #603b1705; grid-column: auto; }
+.analise-card h3 { letter-spacing: .3px; color: #795136; font-size: 11px; margin-bottom: 12px; }
+.analise-info { color: #9e8771; padding-left: 4px; cursor: help; }
+/* Área exclusiva de cultivares; os demais gráficos não são alterados. */
+.cultivar-cabecalho { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
+.cultivar-cabecalho > div { min-width: 0; }
+.cultivar-cabecalho h3 { margin-bottom: 6px; }
+.cultivar-resumo { color: #786450; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
+#paginaAnalise #cultivarCloudContainer {
+    display: block; min-height: 0 !important; flex: initial; width: 100%; padding: 10px; border-radius: 9px;
+    background: linear-gradient(100deg, #faf8f0dc, #ffffffc9), url('../img/sidebar_coffee_bg.jpg') center 68% / cover;
+}
+.cultivar-nuvem { position: relative; width: 100%; height: 360px; min-width: 0; }
+.cultivar-palavra {
+    position: absolute; display: block; padding: 0; border: 0; background: none;
+    font-family: Arial, Helvetica, sans-serif; font-weight: 750; white-space: pre; line-height: 1.18;
+    letter-spacing: 0; cursor: pointer;
+}
+.cultivar-palavra > span { position: absolute; display: grid; place-items: center; left: 50%; top: 50%; transform: translate(-50%, -50%); pointer-events: none; }
+.cultivar-palavra:hover > span { text-decoration: underline; text-underline-offset: 4px; }
+.cultivar-palavra:focus-visible { z-index: 2; outline: 2px solid #bd864c; outline-offset: 1px; }
+.cultivar-palavra:disabled:hover > span { text-decoration: none; }
+.cultivar-cobertura { margin: 8px 0; color: #8b7a67; font-size: 10px; line-height: 1.5; }
+.cultivar-detalhes { padding-top: 4px; color: #867361; font-size: 11px; }
+.cultivar-detalhes summary { cursor: pointer; padding: 4px 0; }
+.cultivar-tabela-rolagem { width: 100%; overflow: auto; margin-top: 10px; }
+#paginaAnalise table.cultivar-tabela, .cultivar-modal table.cultivar-tabela { width: 100%; min-width: 0; border-collapse: collapse; font-size: 12px; text-align: left; }
+#paginaAnalise .cultivar-tabela th, #paginaAnalise .cultivar-tabela td,
+.cultivar-modal .cultivar-tabela th, .cultivar-modal .cultivar-tabela td { padding: 9px 8px; border-bottom: 1px solid #ede5da; font-size: 11px; letter-spacing: 0; }
+.cultivar-tabela thead { color: #876f58; }
+.cultivar-tabela th[scope="row"] { font-weight: 500; overflow-wrap: anywhere; }
+.cultivar-tabela td { color: #6e5c4b; text-align: right; font-variant-numeric: tabular-nums; }
+.cultivar-tabela thead th:not(:first-child) { text-align: right; }
+.cultivar-tabela th button { text-align: left; color: #58361f; font-weight: 600; overflow-wrap: anywhere; }
+.cultivar-tabela th button:hover:not(:disabled) { text-decoration: underline; }
+.cultivar-vazio { display: grid; place-items: center; height: 100%; margin: 0; padding: 24px; color: #918373; font-size: 13px; text-align: center; }
+.cultivar-modal {
+    width: min(1200px, calc(100% - 32px)); max-width: none; max-height: calc(100svh - 32px); margin: auto;
+    padding: 24px; overflow: auto; border: 1px solid #e8dccc; border-radius: 16px; background: #fffcf8; color: #58361f;
+}
+.cultivar-modal::backdrop { background: #211409a6; }
+.cultivar-modal-cabecalho { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+.cultivar-modal h2 { font-size: 22px; font-weight: 700; }
+.cultivar-modal-cabecalho p, .cultivar-consulta > p { margin-top: 5px; color: #8b7a67; font-size: 12px; line-height: 1.5; }
+.cultivar-modal .cultivar-nuvem-expandida {
+    height: clamp(360px, 55svh, 620px); border-radius: 10px;
+    background: linear-gradient(100deg, #faf8f0dc, #ffffffc9), url('../img/sidebar_coffee_bg.jpg') center 68% / cover;
+}
+.cultivar-consulta { margin-top: 20px; }
+.cultivar-consulta h3 { font-size: 14px; font-weight: 700; }
+@media (max-width: 767px) {
+    .cultivar-cabecalho { flex-wrap: wrap; }
+    .cultivar-nuvem { height: 320px; }
+    .cultivar-modal { width: calc(100% - 16px); max-height: calc(100svh - 16px); padding: 16px; }
+    .cultivar-modal h2 { font-size: 18px; }
+    .cultivar-modal .cultivar-nuvem-expandida { height: 380px; }
+    .cultivar-tabela th, .cultivar-tabela td { font-size: 10px; }
+}
+#paginaAnalise .municipio-ranking { min-width: 450px; --rank-columns: 32px minmax(90px, 132px) minmax(90px, 1fr) 73px 48px; }
+#paginaAnalise .municipio-media, #paginaAnalise .municipio-linha { gap: 9px; }
+#paginaAnalise .municipio-linha { min-height: 39px; font-size: 12px; }
+#paginaAnalise .municipio-posicao { padding: 6px 0; border-radius: 5px; }
+#paginaAnalise .municipio-nota { font-size: 14px; }
+#paginaAnalise .municipio-trilho { height: 11px; }
+#paginaAnalise .municipio-trilho::after { top: -15px; height: 40px; }
+#paginaAnalise .municipio-linha:first-child .municipio-trilho::before { top: -15px; }
+#paginaAnalise #graficoNotasCidade { max-height: 460px; overflow: auto; }
+#paginaAnalise .municipio-escala { font-size: 9px; }
+#paginaAnalise .analise-tabela { border-color: var(--analise-borda); border-radius: 12px; box-shadow: 0 5px 20px #603b1705; background: #fffefd; }
+.analise-tabela-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 14px 16px 10px; }
+.analise-tabela-cabecalho h2 { color: #795136; font-size: 11px; font-weight: 750; text-transform: uppercase; letter-spacing: .3px; }
+.analise-tabela-cabecalho p { color: #948b81; font-size: 11px; margin-top: 3px; }
+.analise-tabela-controles { display: flex; align-items: center; gap: 10px; font-size: 11px; color: #92877c; flex-shrink: 0; }
+.analise-botao { display: inline-flex; align-items: center; justify-content: center; min-height: 32px; padding: 6px 12px; background: #fff; border: 1px solid #e7dfd6; border-radius: 7px; color: #62432d; font-size: 11px; white-space: nowrap; }
+.analise-botao:hover:not(:disabled) { background: #faf5ee; }
+.analise-botao:disabled { opacity: .4; cursor: default; }
+.pagina-seta { width: 30px; padding: 0; font-size: 20px; }
+#paginacaoResumo { min-width: 72px; text-align: center; font-variant-numeric: tabular-nums; }
+#paginaAnalise .table-container { overflow: auto; max-height: 510px; margin: 0 6px 6px; }
+#paginaAnalise table { min-width: 900px; font-size: 12px; }
+#paginaAnalise th { padding: 10px 14px; font-size: 9px; letter-spacing: .5px; }
+#paginaAnalise td { padding: 10px 14px; }
+#paginaAnalise th:nth-child(6) { width: auto; text-align: center; }
+#paginaAnalise td:nth-child(7) > div { font-size: 14px; }
+#paginaAnalise .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+@media (min-width: 1900px) { #conteudoPrincipal { padding-left: 32px; padding-right: 32px; } }
+@media (max-width: 1250px) {
+    #paginaAnalise .analise-filtros { grid-template-columns: 1fr; }
+    .analise-indicador { padding: 14px 12px; gap: 10px; }
+    .indicador-icone { width: 40px; height: 46px; }
+    .analise-tabela-cabecalho { flex-wrap: wrap; }
+    #paginaAnalise .analise-graficos { grid-template-columns: minmax(0, 1fr); }
+    #paginaAnalise .municipio-ranking { min-width: 450px; }
+}
+@media (max-width: 1000px) {
+    .analise-indicadores { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #conteudoPrincipal > div > header { flex-wrap: wrap; }
+    #conteudoPrincipal > div > header > div:last-child { margin-left: auto; }
+}
+@media (max-width: 767px) {
+    #conteudoPrincipal { margin-left: 0; padding: 16px; }
+    .analise-filtros > div:last-child { grid-template-columns: 1fr 1fr; }
+    #paginaAnalise #btnFiltrosAvancados { grid-column: 1 / -1; }
+    .analise-indicadores { gap: 8px; }
+    .analise-indicador { min-height: 96px; }
+    .indicador-icone { width: 32px; height: 38px; }
+    .indicador-icone svg { width: 22px; height: 22px; }
+    .analise-indicador h2 { font-size: 9px; }
+    .analise-indicador strong { font-size: 24px; }
+    .analise-tabela-controles { width: 100%; flex-wrap: wrap; gap: 8px; }
+    #paginaAnalise .analise-card { padding: 12px; }
+    #conteudoPrincipal > div > header > div { gap: 8px; }
+    #conteudoPrincipal > div > header h1 { font-size: 22px !important; }
+}
+@media (max-width: 480px) {
+    #conteudoPrincipal > div > header > div:last-child { flex-wrap: wrap; min-width: 0; width: 100%; }
+    #conteudoPrincipal > div > header > div:last-child > button { padding-left: 12px; padding-right: 12px; white-space: nowrap; font-size: 12px; }
+    #menuUsuarioLogado { min-width: 0; }
+    #menuUsuarioContainer > button { padding-left: 8px; padding-right: 8px; gap: 6px; }
+    #nomeUsuarioBtn { max-width: 65px; }
+    #paginaAnalise .municipio-ranking { min-width: 0; --rank-columns: 24px minmax(60px, .95fr) minmax(34px, 1fr) 59px 34px; }
+    #paginaAnalise .municipio-media, #paginaAnalise .municipio-linha { gap: 5px; }
+    #paginaAnalise .municipio-linha { min-height: 32px; font-size: 9px; }
+    #paginaAnalise .municipio-nota { font-size: 10px; }
+    #paginaAnalise .municipio-trilho::after { top: -12px; height: 33px; }
+    #paginaAnalise .municipio-media { font-size: 9px; }
+    #paginaAnalise .municipio-media span { grid-column: 2 / -1; }
+    #paginaAnalise .municipio-escala { text-align: left; }
+}
+
+.cultivar-palavra:disabled { cursor: default; }
+.cultivar-palavra:disabled:hover { text-decoration: none; }
+.cultivar-lista button:disabled { cursor: default; }
+.cultivar-cabecalho h3 { text-transform: uppercase; font-weight: 750; }
+.cultivar-modal button:focus-visible { outline: 2px solid #bd864c; outline-offset: 3px; }

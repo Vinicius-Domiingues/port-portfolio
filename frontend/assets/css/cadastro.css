@@ -1,0 +1,512 @@
+/* Layout da ficha de rastreabilidade. */
+:root {
+    --coffee: #422410;
+    --paper: #f6f2ea;
+    --accent: #dea36a;
+}
+
+body {
+    background: var(--paper);
+}
+
+body > .absolute {
+    display: none;
+}
+
+body .coffee-sidebar {
+    position: sticky;
+    top: 0;
+    width: 29%;
+    height: 100vh;
+    min-height: 700px;
+    padding: 60px 12% 48px 3.7%;
+    justify-content: space-between;
+    background: #251b0f;
+    box-shadow: none;
+}
+
+.coffee-sidebar > div.absolute {
+    display: none;
+}
+
+.coffee-sidebar > img {
+    opacity: 1;
+    mix-blend-mode: normal;
+    object-position: 48% center;
+}
+
+.coffee-sidebar::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(180deg, #160f08a6, #160f0820 48%, #160f08e8);
+}
+
+.coffee-sidebar::after {
+    content: '';
+    position: absolute;
+    right: -62px;
+    top: -8%;
+    width: 110px;
+    height: 116%;
+    background: var(--paper);
+    border-left: 20px solid #967051;
+    border-radius: 48% 0 0 48%;
+    transform: rotate(3deg);
+    z-index: 3;
+}
+
+.coffee-sidebar > .relative {
+    padding: 0;
+    width: 265px;
+    max-width: 23vw;
+}
+
+.coffee-sidebar .sidebar-title {
+    font-size: clamp(18px, 1.65vw, 28px);
+    font-weight: 700;
+    letter-spacing: -.5px;
+}
+
+.coffee-sidebar p {
+    font-size: 18px;
+    color: #f6f2ea;
+    font-weight: 400;
+}
+
+.sidebar-footer {
+    position: relative;
+    z-index: 2;
+    width: 230px;
+    max-width: 20vw;
+    color: white;
+}
+
+.sidebar-footer #sidebarStep {
+    color: #edb777;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.sidebar-progress {
+    height: 7px;
+    background: #ffffff40;
+    border-radius: 10px;
+    margin: 12px 0 30px;
+    overflow: hidden;
+}
+
+.sidebar-progress span {
+    display: block;
+    height: 100%;
+    width: 33.333%;
+    background: #edb777;
+    border-radius: inherit;
+    transition: width .25s;
+}
+
+.sidebar-footer p {
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.sidebar-footer p::before {
+    content: '';
+    display: block;
+    background: var(--accent);
+    width: 28px;
+    height: 2px;
+    margin-bottom: 18px;
+}
+
+.sidebar-footer small {
+    display: block;
+    margin-top: 28px;
+    font-size: 9px;
+    line-height: 1.8;
+    letter-spacing: 1.6px;
+    color: #d1c2b2;
+}
+
+body .registration-area {
+    padding: 80px 2.5% 42px 2%;
+}
+
+.registration-area main {
+    max-width: 1180px;
+    background: #fcfaf7;
+    border: 0;
+    box-shadow: 0 12px 40px #4a2e1b12;
+    border-radius: 18px;
+}
+
+.registration-area header {
+    background: linear-gradient(115deg, #2e1e12, #382212);
+    padding: 30px;
+    min-height: 116px;
+    display: flex;
+    align-items: center;
+}
+
+.registration-area header > .relative {
+    width: 100%;
+    align-items: center;
+}
+
+.registration-area header > .relative > div {
+    padding-left: 78px;
+}
+
+.registration-area header > .relative > div::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 60px;
+    height: 60px;
+    background: url('../img/logo branco.png') center / contain no-repeat;
+}
+
+#tituloPagina {
+    font-size: clamp(20px, 1.85vw, 31px);
+    font-weight: 700;
+    letter-spacing: .2px;
+    flex-wrap: wrap;
+    gap: 0 9px;
+}
+
+#tituloPagina span {
+    color: var(--accent);
+}
+
+.registration-area header p {
+    color: #d1c2b2;
+    font-size: 9px;
+    letter-spacing: 3.5px;
+    margin-top: 8px;
+    font-weight: 400;
+}
+
+#btnVoltarGlobal {
+    position: absolute;
+    right: 2.5vw;
+    top: 16px;
+    border: 1px solid #82644e;
+    border-radius: 16px;
+    padding: 13px 24px;
+    color: #362214;
+    font-size: 13px;
+    background: transparent;
+}
+
+#btnVoltarGlobal:hover {
+    background: #eaded0;
+}
+
+#tabsContainer {
+    padding: 22px 30px;
+    gap: 16px;
+    background: #f8f6f2;
+}
+
+#tabsContainer > .absolute {
+    display: none;
+}
+
+.tab-btn {
+    background: transparent;
+    padding: 0;
+    gap: 12px;
+    flex: 1;
+}
+
+.tab-btn:not(:last-of-type)::after {
+    content: '';
+    height: 1px;
+    background: #d1c4b7;
+    flex: 1;
+    margin-left: 6px;
+}
+
+.tab-btn .step-number {
+    width: 38px;
+    height: 38px;
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 600;
+    background: #eee9e2;
+    color: #38332d;
+}
+
+.tab-btn .step-text {
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: 0;
+    color: #57534e;
+    white-space: nowrap;
+}
+
+.tab-btn.active .step-text {
+    font-weight: 600;
+}
+
+.tab-btn.completed .step-number {
+    background: #21773e;
+    font-size: 0;
+}
+
+.tab-btn.completed .step-number::after {
+    content: '✓';
+    font-size: 21px;
+}
+
+#stepIndicator {
+    position: absolute;
+    right: 30px;
+    top: 104px;
+    width: 150px;
+    font-size: 12px;
+    line-height: 1.7;
+    color: #716d67;
+    font-weight: 500;
+    margin: 0;
+}
+
+#formAmostra {
+    padding: 28px 30px 24px;
+    background: #fcfaf7;
+}
+
+.tab-content > div:first-child {
+    min-height: 40px;
+    margin-bottom: 3px;
+    padding-right: 155px;
+    color: var(--coffee);
+    gap: 18px;
+}
+
+.tab-content > div:first-child > svg {
+    width: 52px;
+    height: 52px;
+    padding: 13px;
+    border-radius: 50%;
+    background: #f0e8df;
+}
+
+.tab-content h3 {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    white-space: normal;
+}
+
+.tab-content > div:first-child > div {
+    display: none;
+}
+
+.tab-content > p {
+    font-size: 13px;
+    color: #82817f;
+    margin: -5px 155px 30px 70px;
+}
+
+.tab-content > .grid {
+    gap: 22px;
+}
+
+#formAmostra label {
+    font-size: 13px;
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 500;
+    color: #302e2b;
+}
+
+.grid > div > div:has(> input), .grid > div > div:has(> select) {
+    background: #faf8f5;
+    border-color: #d9d3cd;
+    border-radius: 11px;
+    min-height: 47px;
+}
+
+.grid > div > div > svg {
+    color: #59371f;
+    width: 21px;
+    height: 21px;
+    flex-shrink: 0;
+}
+
+#formAmostra input, #formAmostra select {
+    font-size: 13px;
+    font-weight: 400;
+    min-width: 0;
+}
+
+.tab-content > div:last-child:not(.grid) {
+    border-top: 1px solid #e7dfd5;
+    margin-top: 28px;
+    padding-top: 20px;
+}
+
+.tab-content > div:last-child > button {
+    min-height: 48px;
+    font-size: 13px;
+    letter-spacing: 0;
+    text-transform: none;
+    font-weight: 600;
+}
+
+button:focus-visible {
+    outline: 3px solid #d69d65;
+    outline-offset: 4px;
+}
+
+@media (min-width: 1500px) {
+    body .registration-area {
+        padding-top: 80px;
+    }
+
+    #formAmostra {
+        padding: 30px;
+    }
+
+    .tab-content > .grid {
+        gap: 24px;
+    }
+
+}
+
+@media (max-width: 1100px) {
+    body .coffee-sidebar {
+        width: 25%;
+        padding-left: 24px;
+    }
+
+    .coffee-sidebar > .relative {
+        max-width: 19vw;
+    }
+
+    .coffee-sidebar .sidebar-title {
+        font-size: 17px;
+    }
+
+    .coffee-sidebar p {
+        font-size: 15px;
+    }
+
+    body .registration-area {
+        padding-left: 20px;
+    }
+
+    .tab-content h3 {
+        font-size: 15px;
+    }
+
+}
+
+@media (max-width: 1023px) {
+    body .coffee-sidebar {
+        display: none;
+    }
+
+    body .registration-area {
+        padding: 78px 24px 30px;
+    }
+
+    #btnVoltarGlobal {
+        right: 24px;
+    }
+
+}
+
+@media (max-width: 640px) {
+    body .registration-area {
+        padding: 74px 12px 20px;
+    }
+
+    .registration-area header {
+        padding: 24px 18px;
+        min-height: 110px;
+    }
+
+    .registration-area header > .relative > div {
+        padding-left: 0;
+    }
+
+    .registration-area header > .relative > div::before {
+        display: none;
+    }
+
+    #tituloPagina {
+        font-size: 21px;
+    }
+
+    .registration-area header p {
+        font-size: 8px;
+        letter-spacing: 2px;
+        line-height: 1.8;
+    }
+
+    #tabsContainer {
+        padding: 18px 12px;
+        gap: 8px;
+    }
+
+    .tab-btn {
+        flex-direction: column;
+        gap: 7px;
+    }
+
+    .tab-btn::after {
+        display: none;
+    }
+
+    .tab-btn .step-text {
+        font-size: 10px;
+    }
+
+    .tab-btn .step-number {
+        width: 32px;
+        height: 32px;
+    }
+
+    #stepIndicator {
+        position: static;
+        width: auto;
+        margin: 0 0 18px;
+        text-align: left;
+        font-size: 11px;
+    }
+
+    #formAmostra {
+        padding: 20px 18px;
+    }
+
+    .tab-content > div:first-child {
+        padding: 0;
+        gap: 12px;
+    }
+
+    .tab-content h3 {
+        font-size: 15px;
+    }
+
+    .tab-content > p {
+        margin: 10px 0 24px;
+        line-height: 1.6;
+    }
+
+    .tab-content > .grid {
+        gap: 18px;
+    }
+
+}
+
+#formAmostra {
+    position: relative;
+}
+
+#stepIndicator {
+    top: 28px;
+}

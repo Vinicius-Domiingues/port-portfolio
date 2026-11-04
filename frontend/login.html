@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#382316">
+    <title>Login - Região Vulcânica</title>
+    <link rel="stylesheet" href="assets/css/login.css">
+</head>
+<body>
+    <main class="login-layout">
+        <section class="brand-panel" aria-label="Região Vulcânica — Business Intelligence">
+            <a class="brand" href="dashboard.html" aria-label="Região Vulcânica — Página inicial">
+                <img src="assets/img/logo branco.png" alt="" width="88" height="88">
+                <span><strong>REGIÃO<br>VULCÂNICA</strong><small>BUSINESS INTELLIGENCE</small></span>
+            </a>
+            <div class="brand-message">
+                <div class="gold-rule" aria-hidden="true"></div>
+                <h1>Rastreabilidade<br>do café, do campo<br><em>até o consumidor.</em></h1>
+                <p>Tecnologia e dados para valorizar<br>o que vem da nossa terra.</p>
+                <div class="gold-rule" aria-hidden="true"></div>
+            </div>
+            <footer class="brand-footer">
+                <p>PESSOAS · ORIGEM · QUALIDADE</p>
+                <p>UM CAFÉ MELHOR SEMPRE</p>
+            </footer>
+        </section>
+        <section class="form-panel" aria-labelledby="loginTitulo">
+            <div class="login-card">
+                <header><h2 id="loginTitulo">Acessar Sistema</h2><p>Entre com suas credenciais para continuar no sistema de gestão de amostras.</p></header>
+                <div id="msgErro" class="error-message hidden" role="alert"></div>
+                <form id="formLogin" onsubmit="fazerLogin(event)">
+                    <label class="sr-only" for="email">E-mail</label>
+                    <div class="input-wrap">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M3 21v-2a9 7 0 0 1 18 0v2Z"/></svg>
+                        <input type="email" id="email" name="email" required placeholder="E-mail" autocomplete="username">
+                    </div>
+                    <label class="sr-only" for="senha">Senha</label>
+                    <div class="input-wrap">
+                        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="9" width="16" height="12" rx="2"/><path d="M8 9V6a4 4 0 0 1 8 0v3M12 14v3"/><circle cx="12" cy="14" r="1"/></svg>
+                        <input type="password" id="senha" name="senha" required placeholder="Senha" autocomplete="current-password">
+                        <button id="btnSenha" class="password-toggle" type="button" onclick="alternarSenha('senha', 'olhoLogin')" aria-label="Mostrar senha" aria-pressed="false">
+                            <svg id="olhoLogin" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/></svg>
+                        </button>
+                    </div>
+                    <div class="form-options">
+                        <label class="remember" title="Lembrar seu e-mail neste dispositivo"><input id="lembrar" type="checkbox" aria-describedby="lembrarDescricao">Lembrar de mim</label>
+                        <span id="lembrarDescricao" class="sr-only">Salva seu e-mail neste dispositivo para o próximo acesso.</span>
+                        <button type="button" class="text-button" onclick="abrirAjuda(true)">Esqueceu a senha?</button>
+                    </div>
+                    <button type="submit" id="btnEntrar" class="submit-button"><span>Entrar</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h17M14 5l7 7-7 7"/></svg></button>
+                </form>
+                <footer>Não tem uma conta? <button class="text-button" type="button" onclick="abrirAjuda(false)">Fale com o administrador</button></footer>
+            </div>
+        </section>
+    </main>
+    <dialog id="ajuda" aria-labelledby="ajudaTitulo" aria-describedby="ajudaTexto">
+        <h2 id="ajudaTitulo">Solicitar acesso</h2><p id="ajudaTexto"></p>
+        <form method="dialog"><button class="submit-button">Entendi</button></form>
+    </dialog>
+    <script src="assets/js/config.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const redirect = urlParams.get('redirect');
+
+        if (localStorage.getItem('authToken')) {
+            if (redirect === 'cadastro') {
+                localStorage.setItem('origemCadastro', 'selos');
+                window.location.href = 'cadastro.html';
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }
+
+
+        const emailSalvo = localStorage.getItem('loginEmailLembrado');
+        if (emailSalvo) {
+            document.getElementById('email').value = emailSalvo;
+            document.getElementById('lembrar').checked = true;
+        }
+        function abrirAjuda(recuperacao) {
+            document.getElementById('ajudaTitulo').textContent = recuperacao ? 'Recuperar acesso' : 'Solicitar acesso';
+            document.getElementById('ajudaTexto').textContent = recuperacao
+                ? 'Para redefinir sua senha, entre em contato com o administrador da sua organização e informe o e-mail cadastrado.'
+                : 'Entre em contato com o administrador da sua organização para solicitar uma conta na plataforma Região Vulcânica.';
+            document.getElementById('ajuda').showModal();
+        }
+        function alternarSenha(inputId, iconId) {
+            const input = document.getElementById(inputId);
+            const icon = document.getElementById(iconId);
+            const mostrar = input.type === 'password';
+            input.type = mostrar ? 'text' : 'password';
+            document.getElementById('btnSenha').setAttribute('aria-label', mostrar ? 'Ocultar senha' : 'Mostrar senha');
+            document.getElementById('btnSenha').setAttribute('aria-pressed', String(mostrar));
+            icon.innerHTML = mostrar
+                ? `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"/>`
+                : `<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>`;
+        }
+
+        async function fazerLogin(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnEntrar');
+            const msgErro = document.getElementById('msgErro');
+            msgErro.classList.add('hidden');
+            btn.querySelector('span').textContent = 'Entrando...';
+            btn.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        email: document.getElementById('email').value,
+                        senha: document.getElementById('senha').value
+                    })
+                });
+                const data = await response.json();
+                if (response.ok) {
+                    if (document.getElementById('lembrar').checked) {
+                        localStorage.setItem('loginEmailLembrado', document.getElementById('email').value.trim());
+                    } else {
+                        localStorage.removeItem('loginEmailLembrado');
+                    }
+                    localStorage.setItem('authToken', data.token);
+                    localStorage.setItem('usuarioNome', data.usuario.nome);
+                    localStorage.setItem('usuarioEmail', data.usuario.email);
+                    localStorage.setItem('usuarioRole', data.usuario.role);
+                    
+                    if (redirect === 'cadastro') {
+                        localStorage.setItem('origemCadastro', 'selos');
+                        window.location.href = 'cadastro.html';
+                    } else {
+                        window.location.href = 'dashboard.html';
+                    }
+                } else {
+                    msgErro.textContent = data.error || 'Erro ao fazer login.';
+                    msgErro.classList.remove('hidden');
+                }
+            } catch (err) {
+                msgErro.textContent = 'Erro de conexão com o servidor.';
+                msgErro.classList.remove('hidden');
+            } finally {
+                btn.querySelector('span').textContent = 'Entrar';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>

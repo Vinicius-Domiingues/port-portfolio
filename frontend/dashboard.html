@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel de Gestão - Região Vulcânica</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        :root { --cafe-950: #211007; --cafe-900: #32180a; --cafe-800: #51280f; --cafe-700: #70401f; --creme: #f7f3ed; }
+        body { background: var(--creme) !important; color: #33251d; }
+        body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .48; background: radial-gradient(circle at 93% 3%, rgba(178, 137, 96, .14), transparent 20%), radial-gradient(circle at 60% 90%, rgba(178, 137, 96, .08), transparent 28%); }
+        #sidebar { width: 240px; transform: none; background: linear-gradient(180deg, rgba(39, 19, 8, .92) 0%, rgba(35, 16, 6, .72) 48%, rgba(26, 11, 4, .24) 100%), url('assets/img/sidebar_coffee_bg.jpg') center bottom / cover; border: 0; box-shadow: 8px 0 28px rgba(53, 30, 16, .12); }
+        #sidebar > div:first-child { background: transparent; border-color: rgba(255,255,255,.12); padding: 24px 22px; }
+        #sidebar > div:first-child span { color: #fff; }
+        #sidebar > div:first-child span:last-child { color: #e7c49d; }
+        #sidebar > div:nth-child(2) { padding: 22px 14px; }
+        #sidebar [id^="btnAba"] { background: transparent; color: #e5d8ca; box-shadow: none; }
+        #sidebar [id^="btnAba"]:hover { background: rgba(255,255,255,.09); color: white; }
+        #sidebar [id^="btnAba"][aria-current="page"] { background: linear-gradient(90deg, #76451f, #593014); color: white; box-shadow: inset 3px 0 #efb778; }
+        #sidebar [id^="btnAba"]:focus-visible, #listaSelosNav button:focus-visible { outline: 2px solid #efb778; outline-offset: 3px; }
+        #sidebar .text-stone-400 { color: rgba(255,255,255,.58); }
+        #sidebar #listaConcursosNav button { color: rgba(255,255,255,.8); }
+        #sidebar #listaConcursosNav button:hover { background: rgba(255,255,255,.08); }
+        #sidebar #listaConcursosNav .text-stone-700 { color: rgba(255,255,255,.88); }
+        #sidebar #listaConcursosNav .text-stone-400 { color: rgba(255,255,255,.52); }
+        #sidebar #listaConcursosNav .bg-white { background: rgba(255,255,255,.08); border-color: rgba(255,255,255,.16); color: #f7dfbf; }
+        #sidebar #listaConcursosNav [class*="bg-[#FAF6F0]"] { background: rgba(189, 121, 65, .22) !important; border-color: rgba(235, 190, 140, .3) !important; }
+        #sidebar #listaConcursosNav [class*="bg-[#FAF6F0]"] .text-\[\#4A2E1B\] { color: #fff0dc !important; }
+        #sidebar > div:last-child { background: rgba(0,0,0,.13); border-color: rgba(255,255,255,.1); color: rgba(255,255,255,.66); }
+        #conteudoPrincipal { margin-left: 240px; padding: 24px 38px 34px; position: relative; }
+        #sidebar.sidebar-recolhida { transform: translateX(-100%); }
+        #conteudoPrincipal.sidebar-recolhida { margin-left: 0; }
+        #conteudoPrincipal > div { max-width: none; }
+        header { padding: 0 4px 14px !important; margin-bottom: 0 !important; border-bottom: 1px solid #e8e0d6; }
+        header h1 { font-size: clamp(1.55rem, 2.3vw, 2rem) !important; color: #2a160b !important; }
+        header > div:first-child > img { width: 58px !important; height: 58px !important; }
+        #campoBusca { background: transparent !important; }
+        #campoBusca, #filtroCategoria { padding: .625rem .75rem !important; }
+        #btnFiltrosAvancados { padding: .625rem 1.25rem !important; }
+        header .w-12.h-12 { width: 40px !important; height: 40px !important; }
+        header .bg-\[\#4A2E1B\] { padding-top: .625rem !important; padding-bottom: .625rem !important; }
+        #sidebar > div:first-child img { filter: grayscale(1) brightness(0) invert(1); opacity: .9; }
+        header > div:first-child > img { filter: sepia(.9) saturate(1.5) brightness(.52); }
+        #cultivarCloudContainer { border-radius: 14px; overflow: hidden; background: linear-gradient(90deg, rgba(255,255,255,.94) 0%, rgba(255,255,255,.88) 58%, rgba(255,255,255,.6) 100%), url('assets/img/sidebar_coffee_bg.jpg') left center / cover; }
+
+        #graficoNotasCidade { overflow-x: auto; padding-bottom: 4px; }
+        .municipio-ranking { min-width: 520px; --rank-columns: 42px minmax(110px, 145px) minmax(120px, 1fr) 88px 58px; }
+        .municipio-media, .municipio-linha { display: grid; grid-template-columns: var(--rank-columns); gap: 12px; align-items: center; }
+        .municipio-media { height: 30px; font-size: 11px; color: #70513b; }
+        .municipio-media span { grid-column: 3; text-align: right; white-space: nowrap; }
+        .municipio-linha { min-height: 39px; border-bottom: 1px solid #f5f2ef; font-size: 12px; }
+        .municipio-linha:last-child { border-bottom: 0; }
+        .municipio-posicao { text-align: center; border-radius: 8px; padding: 6px 0; font-weight: 800; color: #5c4332; background: #f2ece5; }
+        .municipio-linha:nth-child(-n+3) .municipio-posicao { background: var(--bar-color); color: #fff; }
+        .municipio-nome { line-height: 1.3; overflow-wrap: anywhere; }
+        .municipio-trilho { position: relative; height: 11px; background: #f2f2f2; border-radius: 99px; }
+        .municipio-barra { display: block; height: 100%; width: var(--nota); border-radius: inherit; background: var(--bar-color); }
+        .municipio-trilho::after { content: ''; position: absolute; left: var(--media); top: -15px; height: 40px; border-left: 1.5px dashed #b28662; }
+        .municipio-linha:first-child .municipio-trilho::before { content: ''; position: absolute; left: var(--media); top: -15px; width: 6px; height: 6px; background: #b28662; border-radius: 50%; transform: translateX(-2px); }
+        .municipio-nota { text-align: right; font-size: 14px; font-weight: 750; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .municipio-delta { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; color: #78716c; }
+        .municipio-delta.positivo { color: #15916e; }
+        .municipio-delta.negativo { color: #dc4444; }
+        .municipio-vazio { padding: 65px 16px; text-align: center; color: #78716c; font-size: 13px; }
+        .municipio-cabecalho { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+        .municipio-escala { font-size: 10px; color: #78716c; text-align: right; margin-top: 10px; }
+        #cultivarCloudContainer, #cultivarCloudCanvasWrapper { min-height: 160px !important; }
+        #conteudoPrincipal .grid.grid-cols-1.md\:grid-cols-3 { margin-bottom: 16px !important; }
+        .table-container { max-height: 430px; }
+        @media (min-width: 768px) {
+          #conteudoPrincipal .grid.grid-cols-1.md\\:grid-cols-3 { grid-template-columns: minmax(330px, .82fr) minmax(0, 1.3fr); gap: 16px; }
+          #conteudoPrincipal .grid.grid-cols-1.md\\:grid-cols-3 > div:nth-child(2) { grid-column: auto; }
+        }
+        @media (max-width: 767px) {
+          #sidebar { transform: translateX(-100%); }
+          #sidebar.sidebar-mobile-aberta { transform: translateX(0); }
+          #conteudoPrincipal { margin-left: 0; padding: 18px; }
+          header > div:first-child > img { display: none; }
+        }
+        .table-container { max-height: 430px; overflow-y: auto; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #d6d3d1; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: #a8a29e; }
+    </style>
+    <link rel="stylesheet" href="assets/css/produtores.css">
+    <link rel="stylesheet" href="assets/css/perfil.css">
+    <link rel="stylesheet" href="assets/css/selos-sidebar.css">
+    <link rel="stylesheet" href="assets/css/dashboard-analise.css">
+</head>
+<body class="bg-stone-50 font-sans min-h-screen flex relative overflow-x-hidden text-stone-800">
+
+    <!-- MENU LATERAL -->
+    <aside id="sidebar" class="w-72 bg-white flex flex-col border-r border-stone-200 z-20 shrink-0 fixed h-screen top-0 left-0 transform transition-transform duration-300 ease-in-out shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+        <div class="p-6 border-b border-stone-100 flex justify-between items-center bg-white">
+            <a href="dashboard.html" aria-label="Região Vulcânica — Voltar ao início" title="Voltar ao início" class="flex items-center gap-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400">
+                <img src="assets/img/logo.png" alt="Logo Região Vulcânica" class="w-14 h-14 object-contain">
+                <div class="flex flex-col">
+                    <span class="text-stone-900 font-black text-xs leading-none uppercase tracking-wider">Região</span>
+                    <span class="text-stone-900 font-black text-xs leading-none uppercase tracking-wider mt-0.5">Vulcânica</span>
+                    <span class="text-[#78350F] font-extrabold text-[8px] uppercase tracking-widest mt-1">Business Intelligence</span>
+                </div>
+            </a>
+            <button onclick="alternarSidebar()" class="w-7 h-7 rounded-full border border-stone-200 flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-50 transition shadow-sm" title="Recolher Menu">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+        </div>
+        
+        <div class="p-4 flex-1 flex flex-col">
+            <!-- Vertical Navigation Menu -->
+            <div class="flex flex-col gap-1.5 mb-6">
+                <button id="btnAbaConcursos" aria-current="page" onclick="alternarAbaSidebar('concursos')" class="w-full py-3 px-4 flex items-center gap-3 text-xs font-extrabold rounded-xl transition-all duration-200 bg-[#4A2E1B] text-white shadow-sm focus:outline-none uppercase tracking-wider">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5a2 2 0 10-2 2h2zm0 0h4m-4 0H8m12 3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+                    Concursos
+                </button>
+                <button id="btnAbaProdutores" onclick="alternarAbaSidebar('produtores')" class="w-full py-3 px-4 flex items-center gap-3 text-xs font-extrabold rounded-xl transition-all duration-200 text-stone-500 hover:text-stone-800 hover:bg-stone-50 focus:outline-none uppercase tracking-wider">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" /></svg>
+                    Produtores
+                </button>
+                <button id="btnAbaSelos" onclick="alternarAbaSidebar('selos')" class="w-full py-3 px-4 flex items-center gap-3 text-xs font-extrabold rounded-xl transition-all duration-200 text-stone-500 hover:text-stone-800 hover:bg-stone-50 focus:outline-none uppercase tracking-wider">
+                    <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" /></svg>
+                    Selos
+                </button>
+            </div>
+
+            <!-- Conteúdo Concursos -->
+            <div id="secaoConcursos" class="flex flex-col flex-1">
+                <div class="flex justify-between items-center text-[10px] font-extrabold text-stone-400 uppercase tracking-widest mb-3 px-2">
+                    <span>Pastas de Concursos</span>
+                    <button onclick="abrirModalConcurso()" class="text-[#4A2E1B] hover:text-white bg-stone-100 hover:bg-[#4A2E1B] w-5 h-5 rounded-lg flex items-center justify-center font-extrabold transition">+</button>
+                </div>
+                <nav id="listaConcursosNav" class="space-y-1 flex-1 overflow-y-auto max-h-[55vh] px-1"></nav>
+            </div>
+
+            <!-- Conteúdo Produtores -->
+            <div id="secaoProdutores" class="hidden flex flex-col flex-1">
+                <div class="text-[10px] font-bold text-stone-400 uppercase tracking-wider mb-3 px-2">
+                    <span>Produtores Cadastrados</span>
+                </div>
+                <nav id="listaProdutoresNav" class="space-y-1 flex-1 overflow-y-auto max-h-[55vh] px-1 divide-y divide-stone-100 bg-white rounded-2xl border border-stone-150"></nav>
+            </div>
+
+            <!-- Conteúdo Selos -->
+            <div id="secaoSelos" class="hidden selo-painel">
+                <div class="selo-painel-cabecalho">
+                    <h2>Solicitações de selo <span id="seloQuantidade" aria-label="Total de solicitações">0</span></h2>
+                    <button type="button" onclick="irParaCadastro()" class="selo-adicionar" aria-label="Cadastrar amostra com selo" title="Cadastrar amostra com selo">+</button>
+                </div>
+                <p class="selo-painel-descricao">Acompanhe as amostras enviadas</p>
+                <nav id="listaSelosNav" aria-label="Solicitações de selo"></nav>
+                <button type="button" id="seloVerTodas" class="selo-ver-todas" onclick="alternarListaSelos()" aria-expanded="false" aria-controls="listaSelosNav" hidden>
+                    <span aria-hidden="true">▤</span><span id="seloVerTodasTexto">Ver todas as solicitações</span><span aria-hidden="true">›</span>
+                </button>
+            </div>
+        </div>
+        <div class="p-5 border-t border-stone-100 bg-stone-50/50 text-[11px] font-medium text-stone-400 text-center uppercase tracking-wider">
+            Painel Analítico
+        </div>
+    </aside>
+
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main id="conteudoPrincipal" class="flex-1 p-8 w-full transition-all duration-300 ease-in-out">
+        <div class="max-w-7xl mx-auto">
+            
+            <!-- HEADER -->
+            <header class="flex justify-between items-center mb-6 pb-4">
+                <div class="flex items-center gap-4">
+                    <button onclick="alternarSidebar()" class="text-stone-500 hover:text-[#4A2E1B] text-2xl font-bold bg-white w-12 h-12 rounded-xl shadow-sm border border-stone-200 flex items-center justify-center transition focus:outline-none hover:shadow-md">
+                        &equiv;
+                    </button>
+                    <img src="assets/img/logo.png" alt="Logo Região Vulcânica" class="w-[72px] h-[72px] object-contain">
+                    <div>
+                        <h1 id="nomeConcursoAtivo" class="text-3xl font-extrabold text-stone-900 tracking-tight">Carregando...</h1>
+                        <p id="subtituloPainel" class="text-stone-500 text-sm font-medium mt-1">Análise de Dados do Concurso</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center gap-3">
+                    <!-- SINO DE NOTIFICAÇÃO DE SELOS -->
+                    <div class="relative" id="notificacoesContainer">
+                        <button onclick="alternarNotificacoes(event)" class="text-stone-500 hover:text-[#4A2E1B] bg-white w-12 h-12 rounded-xl shadow-sm border border-stone-200 flex items-center justify-center transition focus:outline-none hover:shadow-md relative">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" /></svg>
+                            <span id="badgeNotificacoes" class="hidden absolute top-2 right-2 w-4 h-4 bg-red-500 text-white rounded-full flex items-center justify-center text-[9px] font-bold">0</span>
+                        </button>
+                        
+                        <!-- Dropdown de Notificações -->
+                        <div id="dropdownNotificacoes" class="hidden absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-stone-200 z-50 overflow-hidden">
+                            <div class="px-4 py-3 border-b border-stone-100 bg-stone-50 flex justify-between items-center">
+                                <span class="text-xs font-bold text-stone-900 uppercase tracking-wider">Solicitações de Selos</span>
+                                <span id="qtdNotificacoesPendentes" class="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold">0</span>
+                            </div>
+                            <div id="listaNotificacoes" class="divide-y divide-stone-100 max-h-60 overflow-y-auto">
+                                <!-- Inserido dinamicamente -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <button id="acaoCadastroPainel" onclick="irParaCadastro()" class="bg-[#4A2E1B] text-white px-6 py-3 rounded-xl hover:bg-[#271811] transition font-bold shadow-md flex items-center gap-2 text-sm">
+                        + Nova Amostra
+                    </button>
+
+                    <!-- MENU DO USUÁRIO -->
+                    <div class="relative" id="menuUsuarioContainer">
+                        <!-- Não logado -->
+                        <div id="botoesAuth" class="flex items-center bg-stone-100/80 p-1 rounded-full border border-stone-200/60 gap-1">
+                            <a href="login.html" class="text-stone-600 hover:text-stone-900 hover:bg-stone-200/50 font-extrabold text-xs uppercase tracking-wider px-5 py-2.5 rounded-full transition-all duration-300">
+                                Entrar
+                            </a>
+                        </div>
+
+                        <!-- Logado -->
+                        <div id="menuUsuarioLogado" class="hidden">
+                            <button onclick="alternarMenuUsuario()" class="flex items-center gap-2.5 bg-white border border-stone-200 rounded-xl px-4 py-2.5 hover:bg-stone-50 transition shadow-sm">
+                                <div class="w-7 h-7 bg-[#271811] rounded-full flex items-center justify-center text-white font-black text-xs" id="avatarUsuario">?</div>
+                                <span class="text-sm font-bold text-stone-700 max-w-[120px] truncate" id="nomeUsuarioBtn">Usuário</span>
+                                <svg class="w-3.5 h-3.5 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                            </button>
+
+                            <!-- Dropdown -->
+                            <div id="dropdownUsuario" class="hidden absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-xl border border-stone-200 z-50 overflow-hidden">
+                                <div class="px-4 py-3 border-b border-stone-100">
+                                    <p class="text-xs font-bold text-stone-900 truncate" id="nomeDropdown"></p>
+                                    <p class="text-xs text-stone-400 truncate mt-0.5" id="emailDropdown"></p>
+                                </div>
+                                <a href="registro.html" id="gestaoUsuarios" class="hidden w-full text-left px-4 py-3 text-sm font-bold text-stone-700 hover:bg-stone-50 transition flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3l8 4v5c0 5-8 9-8 9s-8-4-8-9V7l8-4z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4"/></svg>
+                                    Administrador
+                                </a>
+                                <button onclick="fazerLogout()" class="w-full text-left px-4 py-3 text-sm font-bold text-red-600 hover:bg-red-50 transition flex items-center gap-2">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+                                    Sair
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <section id="perfilProdutor" hidden aria-label="Perfil do produtor"></section>
+            <section id="paginaProdutores" hidden aria-label="Gestão de produtores"></section>
+            <div id="paginaAnalise">
+            <!-- BARRA DE BUSCA RÁPIDA -->
+            <div class="analise-filtros bg-white/80 backdrop-blur-sm p-2.5 rounded-2xl shadow-[0_8px_28px_rgba(74,46,27,0.06)] border border-[#e9e1d7] mb-5 mt-5 flex flex-col md:flex-row gap-3 items-center justify-between">
+                <div class="w-full md:w-2/3">
+                    <input type="text" id="campoBusca" oninput="filtrarTabelaEGraficos()" placeholder="Buscar produtor, propriedade, código ou cultivar..." aria-label="Buscar amostras" class="w-full bg-stone-50/50 border-none rounded-xl p-3 text-sm outline-none focus:ring-2 focus:ring-amber-500/20 transition placeholder-stone-400 font-medium">
+                </div>
+                <div class="w-full md:w-1/3 flex gap-2">
+                    <select id="filtroCategoria" aria-label="Filtrar por categoria" onchange="filtrarTabelaEGraficos()" class="w-full bg-stone-50 border border-stone-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500 font-medium text-stone-600">
+                        <option value="">Todas as Categorias</option>
+                        <option value="Natural">Natural (NAT)</option>
+                        <option value="Cereja Descascado">Cereja Descascado (CD)</option>
+                        <option value="Fermentado">Fermentado (FE)</option>
+                    </select>
+<select id="filtroMunicipio" aria-label="Filtrar por município" onchange="filtrarTabelaEGraficos()" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500 bg-stone-50 text-stone-600">
+                    <option value="">Todos os municípios</option>
+                </select>
+                    <button id="btnFiltrosAvancados" onclick="alternarFiltrosAvancados()" class="bg-stone-800 text-white px-5 py-3 rounded-xl hover:bg-stone-900 transition font-bold text-sm whitespace-nowrap shadow-sm">
+                        Filtros Avançados
+                    </button>
+                </div>
+            </div>
+
+<section class="analise-indicadores" aria-label="Resumo das amostras filtradas"><article class="analise-indicador "><span class="indicador-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9 3h6M10 3v7l-6 9a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2l-6-9V3M8 15h8"/></svg></span><div><h2>Amostras</h2><strong id="indicadorAmostras">—</strong><p id="detalheAmostras">Aguardando dados</p></div></article><article class="analise-indicador "><span class="indicador-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><circle cx="9" cy="7" r="3"/><path d="M2 21v-3a7 7 0 0 1 14 0v3ZM16 4a3 3 0 0 1 0 6M18 14a6 6 0 0 1 4 5v2"/></svg></span><div><h2>Produtores</h2><strong id="indicadorProdutores">—</strong><p id="detalheProdutores">Nas amostras filtradas</p></div></article><article class="analise-indicador indicador-verde"><span class="indicador-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 21h19M6 21V10h3v11M12 21V3h3v18M18 21V7h3v14"/></svg></span><div><h2>Média sensorial</h2><strong id="indicadorMedia">—</strong><p id="detalheMedia">Aguardando avaliações</p></div></article><article class="analise-indicador indicador-ouro"><span class="indicador-icone" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M8 3h8v6a4 4 0 0 1-8 0ZM8 5H4v3a4 4 0 0 0 4 4M16 5h4v3a4 4 0 0 1-4 4M12 13v5M8 21h8M10 18h4v3"/></svg></span><div><h2>Maior nota</h2><strong id="indicadorMaiorNota">—</strong><p id="detalheMaiorNota">Aguardando avaliações</p></div></article></section>
+            <!-- SEÇÃO: GRÁFICOS DE ANÁLISE -->
+            <div class="analise-graficos grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+                <!-- Distribuição de cultivares por quantidade de amostras -->
+                <div class="analise-card cultivar-card bg-white/90 p-5 rounded-2xl shadow-[0_8px_28px_rgba(74,46,27,0.06)] border border-[#e9e1d7] flex flex-col">
+                    <div class="cultivar-cabecalho">
+                        <div>
+                            <h3>Destaque do Concurso <span class="analise-info" title="O tamanho dos nomes representa a frequência das cultivares nas amostras filtradas." aria-label="Tamanho proporcional à frequência">ⓘ</span></h3>
+                            <p id="cultivarPredominante" class="cultivar-resumo"></p>
+                        </div>
+                        <button type="button" id="expandirCultivares" class="analise-botao" onclick="abrirModalCultivares()" aria-haspopup="dialog">Expandir gráfico</button>
+                    </div>
+                    <div id="cultivarCloudContainer" class="w-full flex-1 min-h-[180px] flex items-center justify-center"></div>
+                </div>
+                <!-- Ranking sensorial por município -->
+                <div class="analise-card ranking-card bg-white/90 p-5 rounded-2xl shadow-[0_8px_28px_rgba(74,46,27,0.06)] border border-[#e9e1d7] md:col-span-2 min-w-0">
+                    <div class="municipio-cabecalho">
+                        <h3 id="tituloNotasCidade" class="text-xs font-extrabold uppercase tracking-widest" style="color: #70513b">Média Sensorial por Município</h3>
+                        <span class="bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1 text-[10px] font-bold text-stone-500">Pontuação (0–100)</span>
+                    </div>
+                    <div id="graficoNotasCidade" role="region" aria-labelledby="tituloNotasCidade" tabindex="0"></div>
+                </div>
+            </div>
+
+            <!-- TABELA -->
+            <div class="analise-tabela bg-white/90 shadow-[0_8px_28px_rgba(74,46,27,0.06)] rounded-2xl overflow-hidden border border-[#e9e1d7]">
+                <div class="analise-tabela-cabecalho">
+                    <div><h2>Amostras do concurso</h2><p>Lista de amostras, produtores e resultados sensoriais.</p></div>
+                    <div class="analise-tabela-controles">
+                        <button type="button" id="exportarAmostras" class="analise-botao" onclick="exportarAmostrasFiltradas()">↓ Exportar</button>
+                        <label class="sr-only" for="amostrasPorPagina">Amostras por página</label>
+                        <select id="amostrasPorPagina" class="analise-botao" onchange="alterarTamanhoPagina()"><option value="10">10 por página</option><option value="25">25 por página</option><option value="50">50 por página</option></select>
+                        <span id="paginacaoResumo" aria-live="polite"></span>
+                        <button type="button" id="paginaAnterior" class="analise-botao pagina-seta" onclick="mudarPaginaAmostras(-1)" aria-label="Página anterior">‹</button>
+                        <button type="button" id="paginaSeguinte" class="analise-botao pagina-seta" onclick="mudarPaginaAmostras(1)" aria-label="Próxima página">›</button>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <table class="w-full text-left text-sm border-collapse">
+                        <thead class="bg-stone-50/80 text-stone-500 uppercase text-[10px] tracking-widest font-extrabold sticky top-0 z-10 backdrop-blur-md border-b border-stone-200">
+                            <tr>
+                                <th class="p-5 whitespace-nowrap">Código</th>
+                                <th class="p-5">Produtor</th>
+                                <th class="p-5">Origem / Propriedade</th>
+                                <th class="p-5">Cultivar</th>
+                                <th class="p-5 whitespace-nowrap">Altitude</th>
+                                <th class="p-5 text-emerald-600 font-bold w-1/4">Perfil Sensorial</th>
+                                <th class="p-5 text-center whitespace-nowrap">Nota Final</th>
+                                <th class="p-5 text-center whitespace-nowrap">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelaAmostras" class="divide-y divide-stone-100 text-stone-700">
+                            <!-- Injetado dinamicamente -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        </div>
+    </main>
+
+    <dialog id="modalCultivares" class="cultivar-modal" aria-labelledby="tituloModalCultivares">
+        <div class="cultivar-modal-cabecalho">
+            <div><h2 id="tituloModalCultivares">Cultivares do concurso</h2><p id="resumoModalCultivares"></p></div>
+            <button type="button" class="analise-botao" onclick="document.getElementById('modalCultivares').close()" aria-label="Fechar gráfico expandido">Fechar ×</button>
+        </div>
+        <div id="cultivarNuvemExpandida" class="cultivar-nuvem cultivar-nuvem-expandida" role="group" aria-label="Nuvem de cultivares dos dados filtrados"></div>
+        <p id="cultivarCoberturaExpandida" class="cultivar-cobertura" aria-live="polite"></p>
+        <section class="cultivar-consulta" aria-labelledby="tituloListaCultivares">
+            <h3 id="tituloListaCultivares">Todas as cultivares dos dados filtrados</h3>
+            <p>Selecione um nome para aplicar o filtro no painel.</p>
+            <div class="cultivar-tabela-rolagem">
+                <table class="cultivar-tabela"><thead><tr><th scope="col">Cultivar</th><th scope="col">Amostras</th><th scope="col">Participação</th></tr></thead><tbody id="cultivarListaExpandida"></tbody></table>
+            </div>
+        </section>
+    </dialog>
+
+    <!-- GAVETA DE FILTROS AVANÇADOS -->
+    <aside id="drawerFiltros" class="fixed inset-y-0 right-0 w-80 bg-white shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col border-l border-stone-200">
+        <div class="p-5 border-b border-stone-100 flex justify-between items-center bg-white">
+            <h3 class="font-extrabold text-stone-900 tracking-tight">Filtros Avançados</h3>
+            <button onclick="alternarFiltrosAvancados()" class="text-stone-400 hover:text-red-500 text-xl font-bold transition">&times;</button>
+        </div>
+        <div class="p-5 flex-1 overflow-y-auto space-y-5">
+            <div>
+                <label class="block text-xs font-bold text-stone-500 uppercase mb-2 tracking-wider">Altitude (metros)</label>
+                <div class="flex items-center gap-2">
+                    <input type="number" id="filtroAltMin" placeholder="Mín" oninput="filtrarTabelaEGraficos()" class="w-1/2 border border-stone-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500 bg-stone-50">
+                    <span class="text-stone-300">-</span>
+                    <input type="number" id="filtroAltMax" placeholder="Máx" oninput="filtrarTabelaEGraficos()" class="w-1/2 border border-stone-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500 bg-stone-50">
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-stone-500 uppercase mb-2 tracking-wider">Cultivar / Variedade</label>
+                <select id="filtroCultivar" onchange="filtrarTabelaEGraficos()" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500 bg-stone-50 text-stone-600">
+                    <option value="">Todas as variedades</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-stone-500 uppercase mb-2 tracking-wider">Uso da Terra</label>
+                <select id="filtroUsoTerra" onchange="filtrarTabelaEGraficos()" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500 bg-stone-50 text-stone-600">
+                    <option value="">Qualquer vínculo</option>
+                    <option value="Proprietário">Proprietário</option>
+                    <option value="Meeiro/Arrendatário">Meeiro/Arrendatário</option>
+                    <option value="Comodatário">Comodatário</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-stone-500 uppercase mb-2 tracking-wider">Assistência Técnica?</label>
+                <select id="filtroAssistencia" onchange="filtrarTabelaEGraficos()" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500 bg-stone-50 text-stone-600">
+                    <option value="">Todos</option>
+                    <option value="Sim">Sim, recebe apoio</option>
+                    <option value="Não">Não recebe</option>
+                </select>
+            </div>
+            <div>
+                <label class="block text-xs font-bold text-stone-500 uppercase mb-2 tracking-wider">Certificação</label>
+                <select id="filtroCertificacao" onchange="filtrarTabelaEGraficos()" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500 bg-stone-50 text-stone-600">
+                    <option value="">Todas</option>
+                    <option value="Nenhuma">Nenhuma</option>
+                    <option value="Certifica Minas">Certifica Minas</option>
+                    <option value="Rainforest Alliance">Rainforest Alliance</option>
+                    <option value="Fairtrade">Fairtrade</option>
+                </select>
+            </div>
+        </div>
+        <div class="p-4 border-t border-stone-100 bg-stone-50">
+            <button onclick="limparFiltrosAvancados()" class="w-full bg-white text-stone-600 border border-stone-200 py-3 rounded-xl font-bold text-sm hover:bg-stone-100 transition shadow-sm">
+                Limpar Todos os Filtros
+            </button>
+        </div>
+    </aside>
+
+    <div id="overlayDrawer" onclick="alternarFiltrosAvancados()" class="hidden fixed inset-0 bg-stone-900/40 backdrop-blur-sm z-40 transition-opacity"></div>
+
+    <!-- MODAL POP-UP DE CRIAR CONCURSO -->
+    <div id="modalConcurso" class="hidden fixed inset-0 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-stone-100 transform transition-all">
+            <h3 class="text-xl font-black text-stone-900 mb-6 tracking-tight">CRIAR NOVA PASTA</h3>
+            <div class="space-y-5">
+                <div>
+                    <label class="block text-[11px] font-extrabold text-stone-500 uppercase tracking-widest mb-2">Nome do Evento</label>
+                    <input type="text" id="modalNomeConcurso" placeholder="Ex: 5º CONCURSO TERROIR" class="w-full border border-stone-200 rounded-xl p-4 text-sm outline-none focus:border-[#4A2E1B] focus:ring-2 focus:ring-stone-100 bg-stone-50 transition">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-extrabold text-stone-500 uppercase tracking-widest mb-2">Ano Vigente</label>
+                    <input type="number" id="modalAnoConcurso" value="2026" class="w-full border border-stone-200 rounded-xl p-4 text-sm outline-none focus:border-[#4A2E1B] focus:ring-2 focus:ring-stone-100 bg-stone-50 transition">
+                </div>
+            </div>
+            <div class="flex justify-end gap-3 mt-8 pt-6 border-t border-stone-100">
+                <button onclick="fecharModalConcurso()" class="px-5 py-3 text-xs text-stone-500 font-bold hover:bg-stone-100 rounded-xl transition">Cancelar</button>
+                <button onclick="salvarNovoConcurso()" class="px-6 py-3 text-xs bg-[#4A2E1B] text-white font-bold hover:bg-[#271811] rounded-xl shadow-md transition">Criar Pasta</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL POP-UP DE IMPRESSÃO DE SELO -->
+    <div id="modalSelo" class="hidden fixed inset-0 bg-stone-900/80 backdrop-blur-md flex items-center justify-center z-[100] p-4">
+        <div id="seloConteudoImpressao" class="w-full max-w-xl bg-[#FDFBF7] rounded-[2rem] shadow-2xl overflow-hidden flex flex-col relative transform transition-all">
+            
+            <!-- HEADER COM IMAGEM DE FUNDO -->
+            <div class="relative h-48 w-full" id="seloConteudoHeader">
+                <img src="assets/img/seal_coffee_bg.jpg" class="absolute inset-0 w-full h-full object-cover" alt="Background">
+                <div class="absolute inset-0 bg-gradient-to-t from-stone-900/90 via-stone-900/40 to-transparent"></div>
+                
+                <button onclick="fecharModalSelo()" class="absolute top-4 right-4 text-white/70 hover:text-white transition z-10 no-print">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+
+                <div class="absolute bottom-4 left-6 flex items-end justify-between right-6 z-10">
+                    <div>
+                        <div class="flex items-center gap-2 mb-1">
+                            <img src="assets/img/logo.png" alt="Logo" class="w-8 h-8 opacity-90 brightness-0 invert">
+                            <div>
+                                <h4 class="text-white font-black text-[10px] tracking-widest uppercase leading-none">Região Vulcânica</h4>
+                                <p class="text-white/70 font-bold text-[8px] tracking-[0.2em] uppercase mt-0.5">Gestão & Rastreabilidade</p>
+                            </div>
+                        </div>
+                        <h3 class="text-3xl font-serif text-white tracking-tight mt-2">Selo do Café</h3>
+                        <p class="text-white/60 text-[9px] uppercase tracking-widest font-bold mt-1">Qualidade • Rastreabilidade • Origem</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CORPO DO MODAL -->
+            <div class="p-8 pt-6 flex flex-col gap-6 relative bg-[#FDFBF7] text-stone-800">
+
+                <!-- CÓDIGO DO SELO -->
+                <div class="flex justify-between items-center border-b border-stone-200/60 pb-3">
+                    <div>
+                        <span class="block text-[9px] font-bold text-stone-400 uppercase tracking-widest mb-1">Código do Selo</span>
+                        <div class="flex items-center gap-2 bg-[#F3EFE6] px-3 py-1.5 rounded-lg border border-stone-200/50">
+                            <span id="lblCodigo" class="font-mono font-bold text-[#4A2E1B] text-sm"></span>
+                            <svg class="w-3 h-3 text-stone-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                        </div>
+                    </div>
+                    <div class="flex items-center gap-1.5 text-[#8B5A2B]">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                        <span class="text-[9px] font-black uppercase tracking-widest">Certificação Oficial</span>
+                    </div>
+                </div>
+
+                <!-- GRID INFORMAÇÕES -->
+                <div class="grid grid-cols-3 gap-6">
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5 text-stone-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-wider">Produtor</span>
+                        </div>
+                        <span id="lblProdutor" class="font-extrabold text-stone-800 text-sm pl-5 truncate" title=""></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5 text-stone-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-wider">Propriedade</span>
+                        </div>
+                        <span id="lblPropriedade" class="font-bold text-stone-700 text-sm pl-5 truncate"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5 text-stone-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-wider">Município</span>
+                        </div>
+                        <span id="lblMunicipio" class="font-bold text-stone-700 text-sm pl-5 truncate"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5 text-stone-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 11l7-7 7 7M5 19l7-7 7 7"></path></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-wider">Altitude</span>
+                        </div>
+                        <span id="lblAltitude" class="font-bold text-stone-700 text-sm pl-5 truncate"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5 text-stone-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-wider">Cultivar</span>
+                        </div>
+                        <span id="lblCultivar" class="font-bold text-stone-700 text-sm pl-5 truncate"></span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex items-center gap-1.5 text-stone-400">
+                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+                            <span class="text-[8px] font-bold uppercase tracking-wider">Categoria</span>
+                        </div>
+                        <span id="lblCategoria" class="font-bold text-stone-700 text-sm pl-5 truncate"></span>
+                    </div>
+                </div>
+
+                <!-- SENSORIAL -->
+                <div class="flex flex-col gap-2 border-t border-stone-200/60 pt-4 mt-2">
+                    <div class="flex items-center gap-1.5 text-stone-400">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <span class="text-[8px] font-bold uppercase tracking-wider">Sensorial</span>
+                    </div>
+                    <div id="containerSensorial" class="flex flex-wrap gap-2 pl-5">
+                        <!-- Pills inseridas via JS -->
+                    </div>
+                </div>
+
+                <!-- RODAPÉ NOTA SCA E FRASE -->
+                <div class="bg-[#F8F5EE] border border-stone-200/50 rounded-2xl p-4 mt-4 flex justify-between items-center relative overflow-hidden">
+                    <div class="flex items-center gap-4 z-10">
+                        <!-- Medalha -->
+                        <div class="w-14 h-14 bg-[#B78941] rounded-full flex items-center justify-center shadow-[0_0_15px_rgba(183,137,65,0.4)] border-4 border-[#FDFBF7]">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path></svg>
+                        </div>
+                        <div>
+                            <span class="text-[9px] font-bold text-[#B78941] uppercase tracking-widest block mb-0.5">Nota SCA</span>
+                            <div class="flex items-baseline gap-1">
+                                <span id="lblNota" class="font-black text-[#4A2E1B] text-2xl leading-none"></span>
+                                <span class="font-bold text-[#8B5A2B] text-sm">pts</span>
+                            </div>
+                            <span class="text-[8px] font-black text-[#8B5A2B] uppercase tracking-[0.2em] block mt-1">Café Especial</span>
+                        </div>
+                    </div>
+                    <div class="border-l border-stone-300/40 pl-6 z-10 hidden sm:block">
+                        <p class="font-serif italic text-stone-500 text-lg">Qualidade que vem da nossa terra.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AÇÕES -->
+            <div class="flex justify-between items-center px-8 py-5 bg-[#F8F5EE] border-t border-stone-200/60 rounded-b-[2rem]">
+                <a id="btnVerLaudo" target="_blank" href="#" class="hidden px-5 py-2.5 text-xs font-bold text-[#8B5A2B] border border-[#8B5A2B] hover:bg-[#8B5A2B] hover:text-white rounded-xl transition flex items-center gap-1.5">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.415 6.585a6 6 0 108.486 8.486L20.5 13"></path></svg>
+                    Ver Laudo
+                </a>
+                
+                <div class="flex gap-3 ml-auto">
+                    <button onclick="fecharModalSelo()" class="px-5 py-2.5 text-xs text-stone-500 font-bold hover:bg-stone-200/50 rounded-xl transition">Fechar</button>
+                    <button onclick="imprimirSeloConteudo()" class="px-6 py-2.5 text-xs bg-[#4A2E1B] text-white font-bold hover:bg-[#271811] rounded-xl shadow-md transition flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                        Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO DE EXCLUSÃO (ESTÉTICO) -->
+    <div id="modalConfirmacaoExclusao" class="hidden fixed inset-0 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-stone-100 transform transition-all flex flex-col">
+            <div class="flex items-center gap-3 text-red-600 mb-4">
+                <svg class="w-8 h-8 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+                </svg>
+                <h3 class="text-lg font-black text-stone-900 tracking-tight">Confirmar Exclusão</h3>
+            </div>
+            
+            <p class="text-sm text-stone-600 mb-6 leading-relaxed">
+                Atenção: Excluir esta pasta apagará todas as amostras cadastradas dentro dela. Esta ação é irreversível.
+            </p>
+            
+            <div class="mb-6">
+                <label id="labelConfirmacaoExclusao" class="block text-[11px] font-extrabold text-stone-500 uppercase tracking-widest mb-2.5">
+                    Digite o nome da pasta para confirmar:
+                </label>
+                <div class="font-mono text-xs text-stone-700 bg-stone-100 p-3 rounded-lg border border-stone-200 select-none mb-3 text-center font-bold" id="nomePastaExclusaoAlvo"></div>
+                <input type="text" id="inputConfirmacaoExclusao" placeholder="Digite o nome da pasta aqui" class="w-full border border-stone-200 rounded-xl p-4 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100 bg-stone-50 transition text-center font-semibold">
+            </div>
+
+            <!-- Ações -->
+            <div class="flex justify-end gap-3 pt-4 border-t border-stone-100">
+                <button onclick="fecharModalConfirmacaoExclusao()" class="px-5 py-3 text-xs text-stone-500 font-bold hover:bg-stone-100 rounded-xl transition">Cancelar</button>
+                <button id="btnConfirmarExclusaoModal" onclick="executarExclusaoConcursoConfirmado()" class="px-6 py-3 text-xs bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition disabled:opacity-55 disabled:cursor-not-allowed">
+                    Excluir Pasta
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOMIZADO DO PERFIL SENSORIAL -->
+    <div id="modalSensorial" class="hidden fixed inset-0 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-md w-full border border-stone-100 transform transition-all flex flex-col">
+            <div class="flex items-center gap-2.5 text-emerald-600 mb-4">
+                <svg class="w-6 h-6 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+                </svg>
+                <h3 class="text-xl font-black text-stone-900 tracking-tight" id="tituloModalSensorial">Perfil Sensorial</h3>
+            </div>
+            
+            <p class="text-xs text-stone-400 font-bold uppercase tracking-wider mb-4">Notas Sensoriais Identificadas</p>
+            
+            <div id="corpoModalSensorial" class="flex flex-wrap gap-2.5 justify-center py-4 bg-stone-50 rounded-2xl border border-stone-100 p-4 min-h-[100px] items-center">
+                <!-- Inserido dinamicamente -->
+            </div>
+
+            <!-- Ações -->
+            <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-stone-100">
+                <button onclick="fecharModalSensorial()" class="w-full px-6 py-3.5 text-sm bg-[#4A2E1B] text-white hover:bg-[#271811] font-bold rounded-xl shadow-md transition text-center">
+                    Fechar
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL CUSTOMIZADO DE CONFIRMAÇÃO DE EXCLUSÃO DE AMOSTRA (ESTÉTICO) -->
+    <div id="modalConfirmacaoExclusaoAmostra" class="hidden fixed inset-0 bg-stone-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+        <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full border border-stone-100 transform transition-all flex flex-col">
+            <div class="flex items-center gap-3 text-red-600 mb-4">
+                <svg class="w-7 h-7 shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                </svg>
+                <h3 class="text-base font-black text-stone-900 tracking-tight">Excluir Amostra</h3>
+            </div>
+            
+            <p class="text-xs text-stone-600 mb-6 leading-relaxed">
+                Tem certeza que deseja excluir permanentemente a amostra <span id="codAmostraExclusaoAlvo" class="font-mono font-bold text-stone-900 bg-stone-100 px-1.5 py-0.5 rounded border border-stone-200"></span> do produtor <span id="produtorAmostraExclusaoAlvo" class="font-bold text-stone-900"></span>? Esta ação não pode ser desfeita.
+            </p>
+            
+            <!-- Ações -->
+            <div class="flex justify-end gap-3 pt-4 border-t border-stone-100">
+                <button onclick="fecharModalConfirmacaoExclusaoAmostra()" class="px-5 py-3 text-xs text-stone-500 font-bold hover:bg-stone-100 rounded-xl transition">Cancelar</button>
+                <button onclick="executarExclusaoAmostraConfirmada()" class="px-6 py-3 text-xs bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl shadow-md transition">
+                    Excluir Amostra
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT -->
+    <script src="assets/js/config.js"></script>
+    <script src="assets/js/produtores.js"></script>
+    <script src="assets/js/perfil.js"></script>
+    <script src="assets/js/relatorio-produtor.js"></script>
+    <script src="assets/js/selos-sidebar.js"></script>
+    <script src="assets/js/dashboard-analise.js"></script>
+    <script src="assets/js/cultivar-cloud.js"></script>
+    <script>
+        let listaConcursos = [];
+        let listaAmostras = [];
+        let concursoIdAtivo = null;
+        
+        let chartNotas = null;
+
+        // Novas variáveis para Selos
+        let listaSelos = [];
+        let abaSidebarAtiva = 'concursos';
+        
+        let pastaExclusaoPendente = null;
+        let amostraExclusaoPendente = null;
+        let listaProdutores = [];
+        let userRole = null;
+
+        // ── AUTENTICAÇÃO ──────────────────────────────────────────────
+        function verificarAuth() {
+            const token = localStorage.getItem('authToken');
+            const nome = localStorage.getItem('usuarioNome');
+            const email = localStorage.getItem('usuarioEmail');
+            const role = localStorage.getItem('usuarioRole');
+            userRole = role;
+            document.getElementById('gestaoUsuarios').classList.toggle('hidden', role !== 'organizador');
+
+            if (token && nome) {
+                document.getElementById('botoesAuth').classList.add('hidden');
+                document.getElementById('menuUsuarioLogado').classList.remove('hidden');
+
+                const iniciais = nome.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                document.getElementById('avatarUsuario').textContent = iniciais;
+                document.getElementById('nomeUsuarioBtn').textContent = nome.split(' ')[0];
+                document.getElementById('nomeDropdown').textContent = nome;
+                document.getElementById('emailDropdown').textContent = email || '';
+
+                if (role === 'produtor') {
+                    // Produtor não entra no dashboard de forma alguma
+                    localStorage.setItem('origemCadastro', 'selos');
+                    window.location.href = 'cadastro.html?origem=selos';
+                    return;
+                } else {
+                    document.getElementById('btnAbaConcursos')?.classList.remove('hidden');
+                    document.getElementById('btnAbaProdutores')?.classList.remove('hidden');
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        }
+
+        function alternarMenuUsuario() {
+            document.getElementById('dropdownUsuario').classList.toggle('hidden');
+        }
+
+        // Fechar dropdown ao clicar fora
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById('menuUsuarioContainer');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('dropdownUsuario')?.classList.add('hidden');
+            }
+            // Fecha popovers sensoriais
+            document.querySelectorAll('[id^="sp-"]').forEach(el => el.classList.add('hidden'));
+        });
+
+        function fazerLogout() {
+            localStorage.removeItem('authToken');
+            localStorage.removeItem('usuarioNome');
+            localStorage.removeItem('usuarioEmail');
+            localStorage.removeItem('usuarioRole');
+            localStorage.removeItem('origemCadastro');
+            window.location.href = 'login.html';
+        }
+        // ─────────────────────────────────────────────────────────────
+
+        async function init() {
+            try {
+                const response = await apiFetch(API_BASE_URL + '/api/auth/me');
+                if (!response.ok) return;
+                const { usuario } = await response.json();
+                localStorage.setItem('usuarioRole', usuario.role);
+                localStorage.setItem('usuarioNome', usuario.nome);
+                localStorage.setItem('usuarioEmail', usuario.email);
+                if (usuario.role !== 'organizador') {
+                    location.replace('cadastro.html?origem=selos');
+                    return;
+                }
+            } catch (erro) {
+                document.getElementById('nomeConcursoAtivo').textContent = 'Não foi possível verificar seu acesso. Recarregue a página.';
+                return;
+            }
+            verificarAuth();
+            const role = localStorage.getItem('usuarioRole');
+            if (role === 'produtor') {
+                await carregarSolicitacoesSelos();
+            } else {
+                await carregarConcursos();
+                if (listaConcursos.length > 0) {
+                    const pastaSalva = localStorage.getItem('pastaAtiva');
+                    const pastaParaAbrir = listaConcursos.find(c => c.id == pastaSalva) || listaConcursos[0];
+                    setTimeout(async () => {
+                        await selecionarConcurso(pastaParaAbrir.id, pastaParaAbrir.nome);
+                        const abaDestino = new URLSearchParams(location.search).get('aba');
+                        if (['produtores', 'selos'].includes(abaDestino)) alternarAbaSidebar(abaDestino);
+                    }, 150);
+                }
+                if (!listaConcursos.length) {
+                    renderizarTabela([]);
+                    desenharGraficos([]);
+                    document.getElementById('nomeConcursoAtivo').textContent = 'Concursos';
+                    const abaDestino = new URLSearchParams(location.search).get('aba');
+                    if (['produtores', 'selos'].includes(abaDestino)) alternarAbaSidebar(abaDestino);
+                }
+                await carregarSolicitacoesSelos();
+            }
+        }
+
+        function alternarSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const conteudoPrincipal = document.getElementById('conteudoPrincipal');
+            if (window.innerWidth < 768) {
+                sidebar.classList.toggle('sidebar-mobile-aberta');
+                return;
+            }
+            sidebar.classList.toggle('sidebar-recolhida');
+            conteudoPrincipal.classList.toggle('sidebar-recolhida');
+        }
+
+        function alternarFiltrosAvancados() {
+            const drawer = document.getElementById('drawerFiltros');
+            const overlay = document.getElementById('overlayDrawer');
+            drawer.classList.toggle('translate-x-full');
+            overlay.classList.toggle('hidden');
+        }
+
+        async function carregarConcursos() {
+            try {
+                const response = await apiFetch(`${API_BASE_URL}/api/concursos`);
+                listaConcursos = await response.json();
+                renderizarListaSidebar(listaConcursos);
+            } catch (err) { console.error(err); }
+        }
+
+        function renderizarListaSidebar(dados) {
+            const nav = document.getElementById('listaConcursosNav');
+            nav.innerHTML = dados.map(c => `
+                <div class="flex items-center gap-1 w-full group mb-1">
+                    <button onclick="selecionarConcurso(${c.id}, '${c.nome}')" id="btn-concurso-${c.id}" class="flex-1 text-left px-4 py-3 rounded-xl text-xs font-bold transition flex items-center justify-between text-stone-500 hover:bg-stone-50 border border-transparent">
+                        <div class="flex flex-col truncate pr-2 text-left">
+                            <span class="truncate text-stone-700 font-extrabold text-xs" id="lbl-concurso-nome-${c.id}">${c.nome}</span>
+                            <span class="text-[9px] text-stone-400 font-medium mt-0.5">${c.ano}</span>
+                        </div>
+                        <div id="icon-concurso-box-${c.id}" class="w-8 h-8 rounded-lg border border-stone-200 flex items-center justify-center text-stone-400 shrink-0 bg-white group-hover:border-stone-300">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                        </div>
+                    </button>
+                    <button onclick="abrirModalConfirmacaoExclusao(${c.id}, '${c.nome.replace(/'/g, "\\'")}')" class="text-stone-300 hover:text-red-500 p-2 transition opacity-0 group-hover:opacity-100" title="Excluir Pasta">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                            <polyline points="3 6 5 6 21 6"></polyline>
+                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                        </svg>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        async function selecionarConcurso(id, nome) {
+            if (abaSidebarAtiva !== "concursos") return;
+            concursoIdAtivo = id;
+            localStorage.setItem('pastaAtiva', id); 
+
+            // Reset all buttons
+            document.querySelectorAll('[id^="btn-concurso-"]').forEach(el => {
+                el.classList.remove('bg-[#FAF6F0]', 'border-[#EBE3D5]');
+                el.classList.add('border-transparent');
+                
+                // Get dynamic elements
+                const match = el.id.match(/btn-concurso-(\d+)/);
+                if (match) {
+                    const cid = match[1];
+                    const label = document.getElementById(`lbl-concurso-nome-${cid}`);
+                    if (label) label.classList.remove('text-[#4A2E1B]');
+                    
+                    const iconBox = document.getElementById(`icon-concurso-box-${cid}`);
+                    if (iconBox) {
+                        iconBox.classList.remove('border-[#EBE3D5]', 'text-[#4A2E1B]', 'bg-[#FAF6F0]');
+                        iconBox.classList.add('border-stone-200', 'text-stone-400', 'bg-white');
+                    }
+                }
+            });
+
+            const btnAtivo = document.getElementById(`btn-concurso-${id}`);
+            if (btnAtivo) {
+                btnAtivo.classList.remove('border-transparent');
+                btnAtivo.classList.add('bg-[#FAF6F0]', 'border-[#EBE3D5]');
+                
+                const label = document.getElementById(`lbl-concurso-nome-${id}`);
+                if (label) label.classList.add('text-[#4A2E1B]');
+                
+                const iconBox = document.getElementById(`icon-concurso-box-${id}`);
+                if (iconBox) {
+                    iconBox.classList.remove('border-stone-200', 'text-stone-400', 'bg-white');
+                    iconBox.classList.add('border-[#EBE3D5]', 'text-[#4A2E1B]', 'bg-[#FAF6F0]');
+                }
+            }
+
+            document.getElementById('nomeConcursoAtivo').innerText = nome;
+            await carregarAmostrasDaPasta(id);
+        }
+
+        async function carregarAmostrasDaPasta(concursoId) {
+            try {
+                const response = await apiFetch(`${API_BASE_URL}/api/amostras?concurso_id=${concursoId}`);
+                listaAmostras = await response.json();
+                
+                popularFiltrosDinamicos();
+                filtrarTabelaEGraficos(); 
+            } catch (err) { console.error(err); }
+        }
+
+        function popularFiltrosDinamicos() {
+            const municipios = [...new Set(listaAmostras.map(a => a.municipio).filter(Boolean))].sort();
+            const cultivares = [...new Set(listaAmostras.map(a => a.cultivar).filter(Boolean))].sort();
+            
+            document.getElementById('filtroMunicipio').innerHTML = '<option value="">Todos os municípios</option>' + municipios.map(m => `<option value="${m}">${m}</option>`).join('');
+            document.getElementById('filtroCultivar').innerHTML = '<option value="">Todas as variedades</option>' + cultivares.map(c => `<option value="${c}">${c}</option>`).join('');
+        }
+
+        function limparFiltrosAvancados() {
+            document.getElementById('filtroAltMin').value = '';
+            document.getElementById('filtroAltMax').value = '';
+            document.getElementById('filtroMunicipio').value = '';
+            document.getElementById('filtroCultivar').value = '';
+            document.getElementById('filtroUsoTerra').value = '';
+            document.getElementById('filtroAssistencia').value = '';
+            document.getElementById('filtroCertificacao').value = '';
+            document.getElementById('campoBusca').value = '';
+            document.getElementById('filtroCategoria').value = '';
+            filtrarTabelaEGraficos();
+        }
+
+        function filtrarTabelaEGraficos() {
+            const busca = document.getElementById('campoBusca').value.toLowerCase();
+            const cat = document.getElementById('filtroCategoria').value;
+            const mun = document.getElementById('filtroMunicipio').value;
+            const cult = document.getElementById('filtroCultivar').value;
+            const altMin = parseInt(document.getElementById('filtroAltMin').value) || 0;
+            const altMax = parseInt(document.getElementById('filtroAltMax').value) || 99999999;
+            const uso = document.getElementById('filtroUsoTerra').value;
+            const assist = document.getElementById('filtroAssistencia').value;
+            const cert = document.getElementById('filtroCertificacao').value;
+
+            const filtrados = listaAmostras.filter(a => {
+                const fields = (a.nome_produtor + a.nome_propriedade + a.codigo_amostra + a.cultivar).toLowerCase();
+                const bateTexto = fields.includes(busca);
+                const bateCat = cat === "" || a.categoria === cat;
+                const bateMun = mun === "" || a.municipio === mun;
+                const bateCult = cult === "" || a.cultivar === cult;
+                const bateUso = uso === "" || a.uso_terra === uso;
+                const bateAssist = assist === "" || a.assistencia_tecnica === assist;
+                const bateCert = cert === "" || a.certificacoes === cert;
+                
+                const altitude = parseInt(a.altitude_media) || 0;
+                const bateAlt = altitude >= altMin && altitude <= altMax;
+
+                return bateTexto && bateCat && bateMun && bateCult && bateAlt && bateUso && bateAssist && bateCert;
+            });
+
+            renderizarTabela(filtrados);
+            desenharGraficos(filtrados); 
+        }
+
+        function renderizarLinhasTabela(dados) {
+            const lista = document.getElementById('tabelaAmostras');
+            if (dados.length === 0) {
+                lista.innerHTML = `<tr><td colspan="8" class="p-8 text-center text-stone-400 italic">Nenhum dado localizado com estes filtros.</td></tr>`;
+                return;
+            }
+
+            lista.innerHTML = dados.map(a => {
+                let corCodigo = 'text-[#4A2E1B] bg-[#FAF6F0] border border-[#EBE3D5]';
+                if (a.categoria === 'Cereja Descascado') corCodigo = 'text-emerald-800 bg-emerald-50 border border-emerald-100';
+                if (a.categoria === 'Fermentado') corCodigo = 'text-purple-800 bg-purple-50 border border-purple-100';
+
+                const altitude = a.altitude_media ? `${a.altitude_media}m` : '-';
+                const sensorial = a.perfil_sensorial ? a.perfil_sensorial : 'Não informado';
+                const sensorialTags = a.perfil_sensorial
+                    ? a.perfil_sensorial.split(/[,\/]/).map(s => s.trim()).filter(Boolean)
+                        .map(s => `<span class="inline-block bg-emerald-50/60 text-emerald-800 border border-emerald-150 text-[10px] font-bold px-3 py-1 rounded-full shadow-sm hover:scale-105 transition-all duration-200">${s}</span>`)
+                        .join(' ')
+                    : '';
+
+                return `
+                <tr class="hover:bg-stone-50/80 transition group">
+                    <td class="p-5 font-mono font-bold whitespace-nowrap"><span class="px-2.5 py-1 rounded-md ${corCodigo}">${a.codigo_amostra || 'PENDENTE'}</span></td>
+                    <td class="p-5">
+                        <button onclick="event.stopPropagation(); abrirModalPerfilProdutor('${a.nome_produtor.replace(/'/g, "\\'")}')" class="font-bold text-stone-900 hover:text-amber-600 transition text-left focus:outline-none block">
+                            ${a.nome_produtor}
+                        </button>
+                        <div class="text-[10px] text-stone-400 font-medium mt-0.5">TEL: ${a.telefone || '-'}</div>
+                    </td>
+                    <td class="p-5">
+                        <div class="text-stone-800 font-bold">${a.nome_propriedade || '-'}</div>
+                        <div class="text-[11px] text-stone-500 font-medium mt-0.5">${a.municipio}</div>
+                    </td>
+                    <td class="p-5 font-medium text-stone-600">${a.cultivar || '-'}</td>
+                    <td class="p-5 font-mono font-bold text-stone-500 whitespace-nowrap">${altitude}</td>
+                    
+                    <td class="p-5 text-center">
+                        ${a.perfil_sensorial
+                            ? `<button onclick="event.stopPropagation(); abrirModalSensorial('${a.codigo_amostra || 'PENDENTE'}', '${(a.perfil_sensorial || '').replace(/'/g, "\\'")}')"
+                                    class="inline-flex items-center gap-1.5 bg-emerald-50/60 hover:bg-emerald-100/80 text-emerald-800 border border-emerald-200/50 text-xs font-bold px-3 py-1.5 rounded-xl shadow-sm hover:shadow transition-all duration-200">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/></svg>
+                                    Sensorial
+                               </button>`
+                            : `<span class="text-stone-300 text-xs">—</span>`
+                        }
+                    </td>
+
+                    <td class="p-5 text-center whitespace-nowrap">
+                        ${notaValidaAnalise(a) !== null
+                            ? `<div class="font-black text-emerald-600 text-base">${Number(String(a.nota_final).replace(',', '.')).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} pts</div>`
+                            : `<span class="bg-stone-100 text-stone-500 font-bold px-3 py-1.5 rounded-lg text-xs">Sem Laudo</span>`
+                        }
+                    </td>
+                    <td class="p-5 text-center text-xs font-bold whitespace-nowrap">
+                        <div class="flex items-center justify-center gap-3 opacity-70 group-hover:opacity-100 transition-opacity">
+                            ${abaSidebarAtiva === 'selos' ? `
+                                <button onclick="visualizarSelo(${a.selo_id})" title="Visualizar/Imprimir Selo" class="focus:outline-none text-stone-500 hover:text-[#4A2E1B] transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
+                                </button>
+                                ${(a.status_selo === 'Pendente' && userRole !== 'produtor') ? `
+                                    <button onclick="marcarSeloComoResolvido(${a.selo_id})" title="Aprovar Selo" class="focus:outline-none text-emerald-650 hover:text-emerald-800 transition">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                                    </button>
+                                ` : ''}
+                                <button onclick="excluirSolicitacaoSelo(${a.selo_id})" title="Excluir Solicitação" class="focus:outline-none text-stone-400 hover:text-red-500 transition">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                            ` : `
+
+                                <button onclick="editarAmostra(${a.id})" title="Editar" class="focus:outline-none">
+                                    <svg class="w-4 h-4 text-stone-400 hover:text-[#4A2E1B] transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" /></svg>
+                                </button>
+                                <button onclick="excluirAmostra(${a.id})" title="Excluir" class="focus:outline-none">
+                                    <svg class="w-4 h-4 text-stone-400 hover:text-red-500 transition" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                </button>
+                            `}
+                        </div>
+                    </td>
+                </tr>
+            `}).join('');
+        }
+
+        function desenharGraficos(dados) {
+            renderizarResumoAnalise(dados);
+            renderizarNuvemCultivares(dados);
+            renderizarRankingMunicipios(dados);
+        }
+
+        function calcularRankingMunicipios(dados) {
+            const cidades = new Map();
+            let soma = 0, quantidade = 0;
+            dados.forEach(amostra => {
+                const nota = Number(String(amostra.nota_final ?? '').trim().replace(',', '.'));
+                if (!Number.isFinite(nota) || nota <= 0 || nota > 100) return;
+                const cidade = String(amostra.municipio || '').trim() || 'Não informado';
+                const grupo = cidades.get(cidade) || { cidade, soma: 0, quantidade: 0 };
+                grupo.soma += nota;
+                grupo.quantidade++;
+                cidades.set(cidade, grupo);
+                soma += nota;
+                quantidade++;
+            });
+            return {
+                media: quantidade ? soma / quantidade : null,
+                cidades: [...cidades.values()].map(grupo => ({ ...grupo, media: grupo.soma / grupo.quantidade }))
+                    .sort((a, b) => b.media - a.media || a.cidade.localeCompare(b.cidade, 'pt-BR'))
+            };
+        }
+
+        function renderizarRankingMunicipios(dados) {
+            const container = document.getElementById('graficoNotasCidade');
+            container.replaceChildren();
+            const ranking = calcularRankingMunicipios(dados);
+            const criar = (tag, classe, texto) => {
+                const elemento = document.createElement(tag);
+                elemento.className = classe;
+                if (texto !== undefined) elemento.textContent = texto;
+                return elemento;
+            };
+            if (!ranking.cidades.length) {
+                container.append(criar('p', 'municipio-vazio', 'Nenhuma amostra com nota válida para os filtros selecionados.'));
+                return;
+            }
+            const formato = valor => valor.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            const painel = criar('div', 'municipio-ranking');
+            painel.style.setProperty('--media', ranking.media + '%');
+            const cabecalho = criar('div', 'municipio-media');
+            cabecalho.append(criar('span', '', 'Média geral ' + formato(ranking.media) + ' pts'));
+            painel.append(cabecalho);
+            const lista = criar('ol', 'municipio-lista');
+            lista.style.cssText = 'list-style:none;margin:0;padding:0';
+            ranking.cidades.forEach((cidade, indice) => {
+                const linha = criar('li', 'municipio-linha');
+                const cores = ['#53321e', '#754b2d', '#936a4d', '#b09b8c', '#c8b9ae', '#d9cfc7'];
+                linha.style.setProperty('--bar-color', cores[Math.min(indice, cores.length - 1)]);
+                linha.style.setProperty('--nota', cidade.media + '%');
+                linha.append(criar('span', 'municipio-posicao', (indice + 1) + 'º'));
+                linha.append(criar('span', 'municipio-nome', cidade.cidade));
+                const trilho = criar('span', 'municipio-trilho');
+                trilho.setAttribute('aria-hidden', 'true');
+                trilho.append(criar('span', 'municipio-barra'));
+                linha.append(trilho, criar('span', 'municipio-nota', formato(cidade.media) + ' pts'));
+                const diferenca = Math.round((cidade.media - ranking.media) * 100) / 100;
+                const delta = criar('span', 'municipio-delta ' + (diferenca > 0 ? 'positivo' : diferenca < 0 ? 'negativo' : ''), (diferenca > 0 ? '+' : '') + formato(diferenca));
+                delta.setAttribute('aria-label', 'Diferença para a média geral: ' + formato(diferenca) + ' pontos');
+                linha.title = cidade.quantidade + ' amostra(s) avaliada(s)';
+                linha.append(delta);
+                lista.append(linha);
+            });
+            painel.append(lista, criar('p', 'municipio-escala', 'Escala das barras: 0–100 • Diferença em relação à média das amostras filtradas'));
+            container.append(painel);
+        }
+
+        function irParaCadastro() { 
+            localStorage.removeItem('amostraParaEditar'); 
+            localStorage.setItem('pastaAtiva', concursoIdAtivo || 1);
+            if (abaSidebarAtiva === 'selos') {
+                localStorage.setItem('origemCadastro', 'selos');
+            } else {
+                localStorage.removeItem('origemCadastro');
+            }
+            window.location.href = 'cadastro.html'; 
+        }
+        
+        function editarAmostra(id) {
+            const am = listaAmostras.find(a => a.id === id);
+            localStorage.setItem('amostraParaEditar', JSON.stringify(am));
+            window.location.href = 'cadastro.html';
+        }
+
+        function excluirAmostra(id) {
+            const am = listaAmostras.find(a => a.id === id);
+            const codigo = am ? am.codigo_amostra : 'PENDENTE';
+            const produtor = am ? am.nome_produtor : '';
+            abrirModalConfirmacaoExclusaoAmostra(id, codigo, produtor);
+        }
+
+        function abrirModalConfirmacaoExclusaoAmostra(id, codigo, produtor) {
+            amostraExclusaoPendente = id;
+            document.getElementById('codAmostraExclusaoAlvo').textContent = codigo || 'PENDENTE';
+            document.getElementById('produtorAmostraExclusaoAlvo').textContent = produtor;
+            document.getElementById('modalConfirmacaoExclusaoAmostra').classList.remove('hidden');
+        }
+
+        function fecharModalConfirmacaoExclusaoAmostra() {
+            amostraExclusaoPendente = null;
+            document.getElementById('modalConfirmacaoExclusaoAmostra').classList.add('hidden');
+        }
+
+        async function executarExclusaoAmostraConfirmada() {
+            if (!amostraExclusaoPendente) return;
+            const id = amostraExclusaoPendente;
+            fecharModalConfirmacaoExclusaoAmostra();
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await apiFetch(`${API_BASE_URL}/api/amostras/${id}`, {
+                    method: 'DELETE',
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    if (concursoIdAtivo) {
+                        await carregarAmostrasDaPasta(concursoIdAtivo);
+                    }
+                } else {
+                    alert("Erro ao excluir o registro do banco de dados.");
+                }
+            } catch (error) {
+                console.error("Erro na requisição de exclusão:", error);
+                alert("Erro de comunicação com o servidor.");
+            }
+        }
+
+        function abrirModalConcurso() { document.getElementById('modalConcurso').classList.remove('hidden'); }
+        function fecharModalConcurso() { document.getElementById('modalConcurso').classList.add('hidden'); }
+        
+        async function salvarNovoConcurso() {
+            const nome = document.getElementById('modalNomeConcurso').value;
+            const ano = document.getElementById('modalAnoConcurso').value;
+            if(!nome.trim()) { alert("Digite o nome da pasta!"); return; }
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await apiFetch(`${API_BASE_URL}/api/concursos`, {
+                    method: 'POST', 
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    }, 
+                    body: JSON.stringify({ nome, ano })
+                });
+                if (response.ok) {
+                    fecharModalConcurso();
+                    document.getElementById('modalNomeConcurso').value = '';
+                    await carregarConcursos();
+                    if(listaConcursos.length > 0) selecionarConcurso(listaConcursos[0].id, listaConcursos[0].nome);
+                }
+            } catch (err) { alert("Erro ao criar pasta."); }
+        }
+
+        function abrirModalConfirmacaoExclusao(id, nome) {
+            pastaExclusaoPendente = { id, nome };
+            document.getElementById('nomePastaExclusaoAlvo').textContent = nome;
+            document.getElementById('inputConfirmacaoExclusao').value = '';
+            
+            const btnConfirmar = document.getElementById('btnConfirmarExclusaoModal');
+            btnConfirmar.disabled = true;
+
+            // Ativar modal
+            document.getElementById('modalConfirmacaoExclusao').classList.remove('hidden');
+
+            // Focar input
+            setTimeout(() => document.getElementById('inputConfirmacaoExclusao').focus(), 100);
+        }
+
+        function fecharModalConfirmacaoExclusao() {
+            pastaExclusaoPendente = null;
+            document.getElementById('modalConfirmacaoExclusao').classList.add('hidden');
+        }
+
+        async function executarExclusaoConcursoConfirmado() {
+            if (!pastaExclusaoPendente) return;
+            const { id } = pastaExclusaoPendente;
+            fecharModalConfirmacaoExclusao();
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await apiFetch(`${API_BASE_URL}/api/concursos/${id}`, {
+                    method: 'DELETE',
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    if (localStorage.getItem('pastaAtiva') == id) {
+                        localStorage.removeItem('pastaAtiva');
+                    }
+                    await carregarConcursos();
+                    if (listaConcursos.length > 0) {
+                        const novaPasta = listaConcursos[0];
+                        selecionarConcurso(novaPasta.id, novaPasta.nome);
+                    } else {
+                        document.getElementById('nomeConcursoAtivo').innerText = 'Crie uma nova pasta';
+                        document.getElementById('tabelaAmostras').innerHTML = '';
+                        listaAmostras = [];
+                        renderizarTabela([]);
+                        desenharGraficos([]);
+                    }
+                } else {
+                    alert("Erro ao tentar excluir a pasta.");
+                }
+            } catch (error) {
+                console.error("Erro na requisição:", error);
+                alert("Erro de comunicação com o servidor.");
+            }
+        }
+
+        // ── SELOS E NOTIFICAÇÕES ─────────────────────────────────────────
+        function alternarAbaSidebar(aba) {
+            abaSidebarAtiva = aba;
+            alternarPaginaProdutores(aba);
+            const btnConcursos = document.getElementById('btnAbaConcursos');
+            const btnProdutores = document.getElementById('btnAbaProdutores');
+            const btnSelos = document.getElementById('btnAbaSelos');
+            
+            const secaoConcursos = document.getElementById('secaoConcursos');
+            const secaoProdutores = document.getElementById('secaoProdutores');
+            const secaoSelos = document.getElementById('secaoSelos');
+
+            // Estado acessível e visual da seção selecionada.
+            const botoesAbas = { concursos: btnConcursos, produtores: btnProdutores, selos: btnSelos };
+            Object.entries(botoesAbas).forEach(([nome, btn]) => {
+                if (!btn) return;
+                if (nome === aba) btn.setAttribute('aria-current', 'page');
+                else btn.removeAttribute('aria-current');
+            });
+
+            // Reset buttons
+            [btnConcursos, btnProdutores, btnSelos].forEach(btn => {
+                if (btn) {
+                    btn.classList.remove('bg-[#4A2E1B]', 'text-white', 'shadow-sm');
+                    btn.classList.add('text-stone-500', 'hover:text-stone-850', 'hover:bg-stone-50');
+                }
+            });
+
+            // Hide all sections
+            [secaoConcursos, secaoProdutores, secaoSelos].forEach(sec => {
+                if (sec) sec.classList.add('hidden');
+            });
+
+            if (aba === 'concursos') {
+                btnConcursos.classList.add('bg-[#4A2E1B]', 'text-white', 'shadow-sm');
+                btnConcursos.classList.remove('text-stone-500', 'hover:text-stone-855', 'hover:bg-stone-50');
+                secaoConcursos.classList.remove('hidden');
+                
+                // Restaura o concurso ativo ao voltar
+                if (concursoIdAtivo) {
+                    const concursoAtivo = listaConcursos.find(c => c.id === concursoIdAtivo);
+                    if (concursoAtivo) {
+                        selecionarConcurso(concursoAtivo.id, concursoAtivo.nome);
+                    } else if (listaConcursos.length > 0) {
+                        selecionarConcurso(listaConcursos[0].id, listaConcursos[0].nome);
+                    }
+                } else if (listaConcursos.length > 0) {
+                    selecionarConcurso(listaConcursos[0].id, listaConcursos[0].nome);
+                }
+            } else if (aba === 'produtores') {
+                btnProdutores.classList.add('bg-[#4A2E1B]', 'text-white', 'shadow-sm');
+                btnProdutores.classList.remove('text-stone-500', 'hover:text-stone-855', 'hover:bg-stone-50');
+                secaoProdutores.classList.remove('hidden');
+                carregarProdutores();
+            } else if (aba === 'selos') {
+                btnSelos.classList.add('bg-[#4A2E1B]', 'text-white', 'shadow-sm');
+                btnSelos.classList.remove('text-stone-500', 'hover:text-stone-855', 'hover:bg-stone-50');
+                secaoSelos.classList.remove('hidden');
+                carregarSolicitacoesSelos();
+            }
+        }
+
+        async function carregarSolicitacoesSelos() {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await apiFetch(`${API_BASE_URL}/api/selos`, {
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (!response.ok) {
+                    if (response.status === 401) {
+                        alert('Sua sessão expirou. Por favor, faça login novamente.');
+                        fazerLogout();
+                        return;
+                    }
+                    console.error("Erro ao carregar selos:", response.statusText);
+                    return;
+                }
+
+                listaSelos = await response.json();
+                if (!Array.isArray(listaSelos)) {
+                    console.error("Erro: listaSelos não é um array", listaSelos);
+                    return;
+                }
+
+                renderizarListaSelosSidebar(listaSelos);
+                atualizarSinoNotificacoes();
+
+                if (abaSidebarAtiva === 'selos') {
+                    document.getElementById('nomeConcursoAtivo').innerText = 'Painel de Selos';
+                    listaAmostras = listaSelos.map(s => ({
+                        id: s.amostra_id,
+                        selo_id: s.id,
+                        status_selo: s.status,
+                        codigo_amostra: s.codigo_amostra,
+                        nome_produtor: s.nome_produtor,
+                        nome_propriedade: s.nome_propriedade,
+                        municipio: s.municipio,
+                        cultivar: s.cultivar,
+                        categoria: s.categoria,
+                        altitude_media: s.altitude_media,
+                        altitude_maxima: s.altitude_maxima,
+                        perfil_sensorial: s.perfil_sensorial,
+                        nota_final: s.nota_final
+                    }));
+                    popularFiltrosDinamicos();
+                    filtrarTabelaEGraficos();
+                }
+            } catch (err) {
+                console.error("Erro ao carregar selos:", err);
+            }
+        }
+
+        // ── PRODUTORES DE CAFÉ ───────────────────────────────────────────
+        async function carregarProdutores() {
+            definirEstadoProdutores('carregando');
+            try {
+                const response = await apiFetch(API_BASE_URL + '/api/produtores');
+                if (!response.ok) throw new Error('Erro ao carregar produtores');
+                const dados = await response.json();
+                if (!Array.isArray(dados)) throw new Error('Resposta inválida');
+                listaProdutores = dados;
+                atualizarPaginaProdutores(dados);
+            } catch (err) {
+                console.error('Erro ao carregar produtores:', err);
+                definirEstadoProdutores('erro');
+            }
+        }
+
+        function renderizarListaProdutoresSidebar(dados) {
+            const nav = document.getElementById('listaProdutoresNav');
+            if (dados.length === 0) {
+                nav.innerHTML = '<p class="text-xs text-stone-400 italic p-4 text-center">Nenhum produtor cadastrado.</p>';
+                return;
+            }
+
+            nav.innerHTML = dados.map(p => {
+                const iniciais = p.nome_produtor.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                const mediaNotas = p.media_notas ? parseFloat(p.media_notas).toFixed(2) : '0.00';
+                
+                return `
+                <button onclick="abrirModalPerfilProdutor('${p.nome_produtor.replace(/'/g, "\\'")}')" class="w-full text-left p-3.5 hover:bg-stone-50 transition flex items-center justify-between group">
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-lg bg-stone-100 text-[#4A2E1B] font-bold text-xs flex items-center justify-center group-hover:bg-[#4A2E1B] group-hover:text-white transition">
+                            ${iniciais}
+                        </div>
+                        <div>
+                            <div class="text-xs font-bold text-stone-800 group-hover:text-[#4A2E1B] transition max-w-[140px] truncate" title="${p.nome_produtor}">${p.nome_produtor}</div>
+                            <div class="text-[9px] text-stone-400 font-medium">${p.total_amostras} amostra${p.total_amostras > 1 ? 's' : ''}</div>
+                        </div>
+                    </div>
+                    <span class="text-[10px] bg-emerald-50 text-emerald-800 font-extrabold px-2 py-0.5 rounded border border-emerald-100">${mediaNotas}</span>
+                </button>
+                `;
+            }).join('');
+        }
+
+        async function excluirProdutorSelecionado() {
+            const nome = document.getElementById('nomeProdutorModal').textContent;
+            
+            if (!confirm(`Tem certeza que deseja excluir o produtor ${nome}? Esta ação apagará permanentemente o produtor e todas as suas amostras cadastradas. Esta ação não pode ser desfeita.`)) {
+                return;
+            }
+
+            try {
+                const response = await apiFetch(`${API_BASE_URL}/api/produtores/${encodeURIComponent(nome)}`, {
+                    method: 'DELETE'
+                });
+
+                if (response.ok) {
+                    alert('Produtor e suas amostras foram excluídos com sucesso!');
+                    fecharModalPerfilProdutor();
+                    
+                    // Recarregar os dados para atualizar a interface
+                    if (document.body.classList.contains('pagina-produtores-aberta') || document.getElementById('secaoProdutores').classList.contains('hidden') === false) {
+                        carregarProdutores();
+                    }
+                    if (concursoIdAtivo) {
+                        carregarAmostrasDaPasta(concursoIdAtivo);
+                    }
+                } else {
+                    const errorData = await response.json();
+                    alert(`Erro ao excluir produtor: ${errorData.error}`);
+                }
+            } catch (err) {
+                console.error("Erro ao excluir produtor:", err);
+                alert("Falha na comunicação com o servidor.");
+            }
+        }
+
+        function alternarNotificacoes(event) {
+            event.stopPropagation();
+            document.getElementById('dropdownNotificacoes').classList.toggle('hidden');
+        }
+
+        // Close notifications dropdown on document click
+        document.addEventListener('click', (e) => {
+            const container = document.getElementById('notificacoesContainer');
+            if (container && !container.contains(e.target)) {
+                document.getElementById('dropdownNotificacoes')?.classList.add('hidden');
+            }
+        });
+
+        function atualizarSinoNotificacoes() {
+            const pendentes = listaSelos.filter(s => s.status === 'Pendente');
+            const badge = document.getElementById('badgeNotificacoes');
+            const qtdText = document.getElementById('qtdNotificacoesPendentes');
+            const list = document.getElementById('listaNotificacoes');
+
+            qtdText.textContent = pendentes.length;
+
+            if (pendentes.length > 0) {
+                badge.textContent = pendentes.length;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+
+            if (pendentes.length === 0) {
+                list.innerHTML = '<p class="text-xs text-stone-400 italic p-4 text-center">Nenhuma notificação pendente.</p>';
+                return;
+            }
+
+            list.innerHTML = pendentes.map(s => `
+                <button onclick="focarSeloNotificacao(${s.id})" class="w-full text-left p-3 hover:bg-stone-50 transition flex items-start gap-3">
+                    <div class="w-2 h-2 rounded-full bg-red-500 mt-1.5 shrink-0"></div>
+                    <div class="flex-1 min-w-0">
+                        <p class="text-xs font-bold text-stone-900 truncate">Novo selo solicitado</p>
+                        <p class="text-[11px] text-stone-500 truncate">Amostra: <span class="font-bold font-mono">${s.codigo_amostra || '-'}</span> - ${s.nome_produtor}</p>
+                        <span class="text-[9px] text-stone-400 font-medium">${new Date(s.data_solicitacao).toLocaleString('pt-BR')}</span>
+                    </div>
+                </button>
+            `).join('');
+        }
+
+        function focarSeloNotificacao(id) {
+            document.getElementById('dropdownNotificacoes').classList.add('hidden');
+            alternarAbaSidebar('selos');
+            visualizarSelo(id);
+        }
+
+        async function solicitarSelo(amostraId) {
+            const am = listaAmostras.find(a => a.id === amostraId);
+            if (am && (parseFloat(am.nota_final) || 0) < 80.00) {
+                alert('Apenas amostras com pontuação igual ou superior a 80 pontos podem receber selos.');
+                return;
+            }
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await apiFetch(`${API_BASE_URL}/api/selos`, {
+                    method: 'POST',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({ amostra_id: amostraId })
+                });
+ 
+                if (response.ok) {
+                    alert('Selo solicitado com sucesso! Você verá uma notificação no sino no topo.');
+                    await carregarSolicitacoesSelos();
+                } else {
+                    const errData = await response.json();
+                    alert(errData.error || 'Erro ao solicitar selo.');
+                }
+            } catch (err) {
+                console.error(err);
+                alert('Erro de conexão com o servidor.');
+            }
+        }
+
+        async function marcarSeloComoResolvido(id) {
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await apiFetch(`${API_BASE_URL}/api/selos/${id}`, {
+                    method: 'PUT',
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        ...(token ? { 'Authorization': `Bearer ${token}` } : {})
+                    },
+                    body: JSON.stringify({ status: 'Concluída' })
+                });
+
+                if (response.ok) {
+                    await carregarSolicitacoesSelos();
+                } else {
+                    alert('Erro ao atualizar status do selo.');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        async function excluirSolicitacaoSelo(id) {
+            const confirmar = confirm("Excluir esta solicitação permanentemente?");
+            if (!confirmar) return;
+
+            try {
+                const token = localStorage.getItem('authToken');
+                const response = await apiFetch(`${API_BASE_URL}/api/selos/${id}`, {
+                    method: 'DELETE',
+                    headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+                });
+
+                if (response.ok) {
+                    await carregarSolicitacoesSelos();
+                } else {
+                    alert('Erro ao excluir solicitação.');
+                }
+            } catch (err) {
+                console.error(err);
+            }
+        }
+
+        function visualizarSelo(id) {
+            const s = listaSelos.find(item => item.id === id);
+            if (!s) return;
+
+            document.getElementById('lblCodigo').textContent = s.codigo_amostra || 'PENDENTE';
+            document.getElementById('lblProdutor').textContent = s.nome_produtor || '-';
+            document.getElementById('lblProdutor').title = s.nome_produtor || '';
+            document.getElementById('lblPropriedade').textContent = s.nome_propriedade || '-';
+            document.getElementById('lblPropriedade').title = s.nome_propriedade || '';
+            document.getElementById('lblMunicipio').textContent = s.municipio || '-';
+            document.getElementById('lblMunicipio').title = s.municipio || '';
+            document.getElementById('lblAltitude').textContent = s.altitude_media ? `${s.altitude_media}m` : '-';
+            document.getElementById('lblCultivar').textContent = s.cultivar || '-';
+            document.getElementById('lblCultivar').title = s.cultivar || '';
+            document.getElementById('lblCategoria').textContent = s.categoria || '-';
+            document.getElementById('lblCategoria').title = s.categoria || '';
+            
+            document.getElementById('lblNota').textContent = s.nota_final > 0 ? s.nota_final : '--';
+
+            // Sensorial Pills
+            const containerSensorial = document.getElementById('containerSensorial');
+            containerSensorial.innerHTML = '';
+            if (s.perfil_sensorial) {
+                const notas = s.perfil_sensorial.split(',').map(n => n.trim()).filter(n => n);
+                notas.forEach(nota => {
+                    const span = document.createElement('span');
+                    span.className = 'bg-[#EADDD0] text-[#714B2C] text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full border border-[#D5C2AD]';
+                    span.textContent = nota;
+                    containerSensorial.appendChild(span);
+                });
+            } else {
+                const span = document.createElement('span');
+                span.className = 'text-stone-400 text-[9px] font-bold italic';
+                span.textContent = 'Nenhuma nota registrada';
+                containerSensorial.appendChild(span);
+            }
+
+            // Ver Laudo button
+            const btnVerLaudo = document.getElementById('btnVerLaudo');
+            if (s.arquivo_laudo) {
+                btnVerLaudo.href = `${API_BASE_URL}/uploads/laudos/${s.arquivo_laudo}`;
+                btnVerLaudo.classList.remove('hidden');
+                btnVerLaudo.classList.add('flex');
+            } else {
+                btnVerLaudo.classList.add('hidden');
+                btnVerLaudo.classList.remove('flex');
+                btnVerLaudo.href = '#';
+            }
+
+            document.getElementById('modalSelo').classList.remove('hidden');
+        }
+
+        function fecharModalSelo() {
+            document.getElementById('modalSelo').classList.add('hidden');
+        }
+
+        function imprimirSeloConteudo() {
+            const conteudo = document.getElementById('seloConteudoImpressao').innerHTML;
+            const janelaImpressao = window.open('', '_blank', 'width=800,height=900');
+            
+            janelaImpressao.document.write(`
+                <html>
+                <head>
+                    <title>Imprimir Selo</title>
+                    <script src="https://cdn.tailwindcss.com"><\/script>
+                    <style>
+                        body { background: white; margin: 0; padding: 20px; font-family: ui-sans-serif, system-ui, sans-serif; display: flex; justify-content: center; }
+                        .no-print { display: none !important; }
+                        #btnVerLaudo { display: none !important; }
+                        @media print {
+                            body { padding: 0; }
+                            .no-print { display: none !important; }
+                            #btnVerLaudo { display: none !important; }
+                            /* Força a impressão do background na impressão */
+                            * {
+                                -webkit-print-color-adjust: exact !important;
+                                print-color-adjust: exact !important;
+                            }
+                        }
+                    </style>
+                </head>
+                <body onload="window.print(); window.close();">
+                    <div class="max-w-xs mx-auto border-2 border-stone-800 p-6 rounded-2xl bg-white text-stone-950 font-sans flex flex-col gap-3 relative overflow-hidden">
+                        ${conteudo}
+                    </div>
+                </body>
+                </html>
+            `);
+            janelaImpressao.document.close();
+        }
+
+        // Listeners do Modal de Exclusão Customizado
+        document.getElementById('inputConfirmacaoExclusao').addEventListener('input', (e) => {
+            const btnConfirmar = document.getElementById('btnConfirmarExclusaoModal');
+            if (pastaExclusaoPendente && e.target.value === pastaExclusaoPendente.nome) {
+                btnConfirmar.disabled = false;
+            } else {
+                btnConfirmar.disabled = true;
+            }
+        });
+
+        document.getElementById('inputConfirmacaoExclusao').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const btnConfirmar = document.getElementById('btnConfirmarExclusaoModal');
+                if (!btnConfirmar.disabled) {
+                    executarExclusaoConcursoConfirmado();
+                }
+            }
+        });
+
+        function abrirModalSensorial(codigoAmostra, notasString) {
+            document.getElementById('tituloModalSensorial').textContent = `Sensorial — ${codigoAmostra}`;
+            
+            const tags = notasString.split(/[,\/]/).map(s => s.trim()).filter(Boolean);
+            const corpo = document.getElementById('corpoModalSensorial');
+            
+            if (tags.length === 0) {
+                corpo.innerHTML = '<p class="text-xs text-stone-400 italic">Nenhum laudo sensorial informado.</p>';
+            } else {
+                corpo.innerHTML = tags.map(t => `
+                    <span class="inline-block bg-emerald-50 text-emerald-800 border border-emerald-200 text-sm font-extrabold px-5 py-2.5 rounded-full shadow-sm hover:scale-105 transition-all duration-200">
+                        ${t}
+                    </span>
+                `).join('');
+            }
+
+            document.getElementById('modalSensorial').classList.remove('hidden');
+        }
+
+        function fecharModalSensorial() {
+            document.getElementById('modalSensorial').classList.add('hidden');
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,28 @@
+# Dependências do Node
+node_modules/
+
+# Variáveis de ambiente e senhas
+.env
+.env.*
+!.env.example
+
+# Arquivos de compilação
+dist/
+
+# Backups locais (dados pessoais e laudos)
+backups/
+
+# Arquivos locais que podem conter dados exportados ou laudos
+backend/uploads/
+scratch/*.csv
+scratch/*.png
+
+# Histórico do projeto original e materiais locais não publicáveis
+.git-gestao-backup/
+scratch/
+output/
+relatorio/
+.agents/
+.codex/
+.vscode/
+.port-publish/

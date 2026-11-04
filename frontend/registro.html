@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Usuários e Administradores — Região Vulcânica</title><link rel="stylesheet" href="assets/css/usuarios.css"></head>
+<body style="visibility:hidden">
+<aside class="sidebar" id="sidebarUsuarios">
+    <a class="marca" href="dashboard.html"><img src="assets/img/logo branco.png" alt=""><span>REGIÃO<br>VULCÂNICA<small>BUSINESS INTELLIGENCE</small></span></a>
+    <nav aria-label="Navegação principal">
+        <a href="dashboard.html"><i data-icon="inicio"></i>Início</a>
+        <a href="dashboard.html?aba=concursos"><i data-icon="trofeu"></i>Concursos</a>
+        <a href="dashboard.html?aba=produtores"><i data-icon="pessoas"></i>Produtores</a>
+        <a href="dashboard.html?aba=selos"><i data-icon="escudo"></i>Selos</a>
+    </nav>
+    <div class="sidebar-rodape"><img src="assets/img/logo branco.png" alt=""><div><small>PAINEL ANALÍTICO</small><p>Café que revela<br>territórios</p></div></div>
+</aside>
+<main>
+    <header class="cabecalho">
+        <button class="botao-icone" id="alternarSidebarUsuarios" aria-label="Alternar menu lateral" aria-controls="sidebarUsuarios" aria-expanded="true"><i data-icon="menu"></i></button>
+        <div class="titulo"><i data-icon="pessoas"></i><div><h1>Usuários e Administradores</h1><p>Gerencie os acessos à plataforma Região Vulcânica</p></div></div>
+        <div class="cabecalho-acoes"><button class="primario" id="novoUsuario"><span aria-hidden="true">＋</span> Novo usuário</button>
+            <div class="menu-conta"><button id="abrirMenuConta" aria-expanded="false" aria-controls="menuConta"><span class="avatar escuro" id="avatarConta"></span><strong id="nomeConta">Minha conta</strong><span aria-hidden="true">⌄</span></button><div id="menuConta" class="menu-dropdown" hidden><strong id="nomeCompletoConta"></strong><small id="emailConta"></small><a href="registro.html" aria-current="page"><i data-icon="escudo"></i>Administrador</a><button id="sairConta">Sair</button></div></div>
+        </div>
+    </header>
+    <div id="msgSucesso" role="status" class="mensagem sucesso hidden"></div>
+    <section class="resumos" aria-label="Resumo das contas">
+        <article class="resumo"><span class="icone-resumo"><i data-icon="pessoas"></i></span><div><strong id="qtdContas">—</strong><p>Total de contas</p><small class="positivo" id="contasMes">Carregando…</small></div></article>
+        <article class="resumo"><span class="icone-resumo"><i data-icon="escudo"></i></span><div><strong id="qtdAdmins">—</strong><p>Administradores</p><small id="percentualAdmins">— do total</small></div></article>
+        <article class="resumo"><span class="icone-resumo"><i data-icon="usuario"></i></span><div><strong id="qtdComuns">—</strong><p>Usuários comuns</p><small id="percentualComuns">— do total</small></div></article>
+    </section>
+    <section class="cartao contas" aria-labelledby="tituloContas">
+        <div class="topo-contas"><div class="titulo-secao"><span class="icone-circulo"><i data-icon="usuario"></i></span><div><h2 id="tituloContas">Contas cadastradas</h2><p id="totalUsuarios" aria-live="polite">Carregando contas…</p></div></div>
+            <div class="busca-acoes"><label class="busca"><i data-icon="busca"></i><input type="search" id="buscaUsuarios" aria-label="Buscar por nome ou e-mail" placeholder="Buscar por nome ou e-mail..."></label><button id="abrirFiltros" aria-expanded="false" aria-controls="filtrosUsuarios"><i data-icon="filtro"></i>Filtros</button><button class="botao-icone" id="atualizarUsuarios" aria-label="Atualizar contas" title="Atualizar contas"><i data-icon="atualizar"></i></button></div></div>
+        <div id="filtrosUsuarios" class="filtros" hidden><label for="filtroPermissao">Permissão</label><select id="filtroPermissao"><option value="">Todas as permissões</option value="organizador">Administradores</option><option value="produtor">Usuários comuns</option></select><button id="limparFiltros">Limpar filtros</button></div>
+        <div class="tabela-scroll"><table><thead><tr><th scope="col">Nome</th><th scope="col">E-mail</th><th scope="col">Permissão</th><th scope="col">Cadastro em</th><th scope="col">Acesso</th><th scope="col" class="col-acao">Ações</th></tr></thead><tbody id="listaUsuarios"></tbody></table></div>
+        <p id="listaVazia" hidden>Nenhuma conta encontrada para esta busca.</p><p id="erroLista" role="alert"></p>
+        <footer class="rodape-tabela"><span id="contagemPagina">Carregando…</span><div class="paginacao"><button id="paginaAnterior" aria-label="Página anterior">‹</button><span id="paginaAtual" aria-live="polite">1</span><button id="proximaPagina" aria-label="Próxima página">›</button></div></footer>
+    </section>
+    <section class="cartao orientacoes" aria-labelledby="tituloOrientacoes"><h2 id="tituloOrientacoes"><i data-icon="info"></i>Orientações</h2><div class="orientacoes-grade">
+        <article><span class="icone-circulo"><i data-icon="escudo"></i></span><div><h3>Administrador</h3><p>Acesso ao painel, à gestão de usuários, concursos, produtores e amostras.</p></div></article>
+        <article><span class="icone-circulo"><i data-icon="usuario"></i></span><div><h3>Usuário padrão</h3><p>Acesso apenas à solicitação de selos. Os dados internos do sistema permanecem restritos.</p></div></article>
+        <article><span class="icone-circulo"><i data-icon="cadeado"></i></span><div><h3>Conceder acesso</h3><p>Para liberar o painel e a gestão do sistema, use a opção Tornar administrador na conta desejada.</p></div></article>
+    </div></section>
+</main>
+<dialog id="cadastroUsuario" aria-labelledby="tituloCadastro"><div class="dialog-titulo"><h2 id="tituloCadastro">Registrar usuário</h2><button class="botao-icone" type="button" onclick="document.getElementById('cadastroUsuario').close()" aria-label="Fechar cadastro">×</button></div><p>A nova conta poderá solicitar selos. O acesso administrativo é concedido separadamente.</p><div id="msgErro" role="alert" class="mensagem erro hidden"></div>
+<form id="formRegistro" onsubmit="criarConta(event)"><label for="nome">Nome completo</label><input id="nome" maxlength="150" required placeholder="Nome completo do usuário" autocomplete="off"><label for="email">E-mail</label><input id="email" type="email" maxlength="150" required placeholder="seu@email.com" autocomplete="off"><div class="duas-colunas"><div><label for="senha">Senha inicial</label><input id="senha" type="password" minlength="8" maxlength="72" autocomplete="new-password" required placeholder="Mín. 8 caracteres"></div><div><label for="senhaConfirmar">Confirmar senha</label><input id="senhaConfirmar" type="password" autocomplete="new-password" required placeholder="Repita a senha"></div></div><div class="dialog-acoes"><button type="button" onclick="document.getElementById('cadastroUsuario').close()">Cancelar</button><button type="submit" class="primario" id="btnCriar">Registrar usuário</button></div></form></dialog>
+<dialog id="confirmacaoAdmin" aria-labelledby="tituloConfirmacao"><h2 id="tituloConfirmacao">Tornar administrador?</h2><p id="textoConfirmacao"></p><p id="erroPromocao" role="alert"></p><div class="dialog-acoes"><button type="button" onclick="document.getElementById('confirmacaoAdmin').close()">Cancelar</button><button class="primario" type="button" id="confirmarAdmin">Confirmar acesso</button></div></dialog>
+<script src="assets/js/config.js"></script><script src="assets/js/usuario-cadastro.js"></script><script src="assets/js/usuarios.js"></script>
+</body></html>
