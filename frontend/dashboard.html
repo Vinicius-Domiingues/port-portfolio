@@ -998,11 +998,13 @@
                     </td>
                     <td class="p-5 text-center text-xs font-bold whitespace-nowrap">
                         <div class="flex items-center justify-center gap-3 opacity-70 group-hover:opacity-100 transition-opacity">
+                            ${abaSidebarAtiva === 'selos' && a.status_selo === 'Pendente' && userRole !== 'produtor' && !seloPodeSerAprovado(a.nota_final)
+                                ? '<span class="text-[10px] text-stone-500 font-medium" title="Edite a amostra em Concursos e registre a avaliação. A aprovação exige nota mínima de 80 pontos.">Requer nota ≥ 80</span>' : ''}
                             ${abaSidebarAtiva === 'selos' ? `
                                 <button onclick="visualizarSelo(${a.selo_id})" title="Visualizar/Imprimir Selo" class="focus:outline-none text-stone-500 hover:text-[#4A2E1B] transition">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" /></svg>
                                 </button>
-                                ${(a.status_selo === 'Pendente' && userRole !== 'produtor') ? `
+                                ${(a.status_selo === 'Pendente' && userRole !== 'produtor' && seloPodeSerAprovado(a.nota_final)) ? `
                                     <button onclick="marcarSeloComoResolvido(${a.selo_id})" title="Aprovar Selo" class="focus:outline-none text-emerald-650 hover:text-emerald-800 transition">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
                                     </button>
@@ -1520,16 +1522,18 @@
                         'Content-Type': 'application/json',
                         ...(token ? { 'Authorization': `Bearer ${token}` } : {})
                     },
-                    body: JSON.stringify({ status: 'Concluída' })
+                    body: JSON.stringify({ status: 'Aprovado' })
                 });
 
                 if (response.ok) {
                     await carregarSolicitacoesSelos();
                 } else {
-                    alert('Erro ao atualizar status do selo.');
+                    const erro = await response.json().catch(() => ({}));
+                    alert(erro.error || 'Erro ao atualizar status do selo. Tente novamente.');
                 }
             } catch (err) {
                 console.error(err);
+                alert('Não foi possível conectar ao servidor para aprovar o selo. Tente novamente.');
             }
         }
 

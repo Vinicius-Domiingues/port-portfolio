@@ -2,6 +2,11 @@
 let todasSolicitacoesSelos = false;
 let solicitacoesSidebar = [];
 
+function seloPodeSerAprovado(nota) {
+    const valor = Number(String(nota ?? '').replace(',', '.'));
+    return Number.isFinite(valor) && valor >= 80;
+}
+
 function alternarListaSelos() {
     todasSolicitacoesSelos = !todasSolicitacoesSelos;
     renderizarListaSelosSidebar(solicitacoesSidebar);
@@ -32,13 +37,14 @@ function renderizarListaSelosSidebar(dados) {
         'Em Analise': 'analise',
         'Em Análise': 'analise',
         'Aprovado': 'aprovado',
+        'Concluída': 'aprovado',
         'Resolvido': 'aprovado',
         'Rejeitado': 'rejeitado'
     };
 
     nav.innerHTML = visiveis.map(selo => {
         const nome = selo.nome_produtor || 'Produtor não informado';
-        const status = selo.status || 'Não informado';
+        const status = selo.status === 'Concluída' ? 'Aprovado' : selo.status || 'Não informado';
         const classe = statusClasses[status] || 'neutro';
 
         return `
@@ -56,7 +62,9 @@ function renderizarListaSelosSidebar(dados) {
                 <details class="selo-opcoes">
                     <summary aria-label="Ações da solicitação de ${escaparProdutor(nome)}" title="Ações da solicitação">•••</summary>
                     <div>
-                        ${status === 'Pendente' && userRole !== 'produtor' ? `<button type="button" data-selo-aprovar="${escaparProdutor(selo.id)}">Aprovar selo</button>` : ''}
+                        ${status === 'Pendente' && userRole !== 'produtor' ? (seloPodeSerAprovado(selo.nota_final)
+                            ? `<button type="button" data-selo-aprovar="${escaparProdutor(selo.id)}">Aprovar selo</button>`
+                            : '<span class="selo-aprovacao-aviso">Aprovação disponível após avaliação com nota mínima de 80 pontos.</span>') : ''}
                         <button type="button" data-selo-excluir="${escaparProdutor(selo.id)}">Excluir solicitação</button>
                     </div>
                 </details>

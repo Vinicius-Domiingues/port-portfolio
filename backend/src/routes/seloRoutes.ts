@@ -113,7 +113,8 @@ router.get('/selos', requireAuth, async (req: AuthenticatedRequest, res) => {
 // 3. ATUALIZAR STATUS DA SOLICITAÇÃO (PUT)
 router.put('/selos/:id', requireAuth, async (req: AuthenticatedRequest, res) => {
     const { id } = req.params;
-    const { status } = req.body;
+    const statusRecebido = req.body.status;
+    const status = statusRecebido === 'Concluída' ? 'Aprovado' : statusRecebido;
     const user = req.user;
 
     if (!user) {
@@ -125,13 +126,13 @@ router.put('/selos/:id', requireAuth, async (req: AuthenticatedRequest, res) => 
         return;
     }
 
-    if (!status) {
-        res.status(400).json({ error: 'Status é obrigatório.' });
+    if (!['Pendente', 'Em análise', 'Aprovado', 'Rejeitado'].includes(status)) {
+        res.status(400).json({ error: 'Status de solicitação inválido.' });
         return;
     }
 
     try {
-        if (status === 'Concluída') {
+        if (status === 'Aprovado') {
             const [amostras]: any = await db.execute(
                 `SELECT a.nota_final FROM amostras a
                  JOIN solicitacoes_selos ss ON ss.amostra_id = a.id
@@ -145,14 +146,18 @@ router.put('/selos/:id', requireAuth, async (req: AuthenticatedRequest, res) => 
             }
 
             const nota = parseFloat(amostras[0].nota_final) || 0.00;
-            if (nota < 80.00) {
+            if (!Number.isFinite(nota) || nota < 80.00) {
                 res.status(400).json({ error: 'Não é possível aprovar esta solicitação. A amostra precisa ter uma nota igual ou superior a 80 pontos.' });
                 return;
             }
         }
 
         const query = 'UPDATE solicitacoes_selos SET status = ? WHERE id = ?';
-        await db.execute(query, [status, id]);
+        const [resultado]: any = await db.execute(query, [status, id]);
+        if (!resultado.affectedRows) {
+            res.status(404).json({ error: 'Solicitação de selo não encontrada.' });
+            return;
+        }
         res.status(200).json({ message: 'Status da solicitação atualizado com sucesso!' });
     } catch (error) {
         console.error(error);

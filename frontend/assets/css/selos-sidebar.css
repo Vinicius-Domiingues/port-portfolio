@@ -1,4 +1,5 @@
 /* Solicitações de selo na navegação lateral. */
+.selo-aprovacao-aviso { display: block; padding: 8px 10px; font-size: 11px; line-height: 1.5; color: #70513b; white-space: normal; }
 #sidebar #btnAbaSelos[aria-current="page"] {
     background: linear-gradient(105deg, #744821, #412712);
     border: 1px solid #eabd77;
