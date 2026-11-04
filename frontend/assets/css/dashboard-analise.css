@@ -45,13 +45,62 @@
 .analise-card h3 { letter-spacing: .3px; color: #795136; font-size: 11px; margin-bottom: 12px; }
 .analise-info { color: #9e8771; padding-left: 4px; cursor: help; }
 /* Área exclusiva de cultivares; os demais gráficos não são alterados. */
+.amostra-codigo { display: inline-block; padding: 4px 10px; border: 1px solid var(--categoria-borda); border-radius: 6px; background: var(--categoria-fundo); color: var(--categoria-cor); }
+.amostra-categoria { display: block; margin-top: 7px; font: 600 10px/1.4 Arial, sans-serif; color: var(--categoria-cor); }
+.amostra-categoria::before { content: ''; display: inline-block; width: 6px; height: 6px; margin-right: 5px; border-radius: 50%; background: currentColor; }
+.categoria-natural { --categoria-cor: #925019; --categoria-fundo: #fff3df; --categoria-borda: #f0d8ac; }
+.categoria-cd { --categoria-cor: #12634b; --categoria-fundo: #ecf9f1; --categoria-borda: #c4ead7; }
+.categoria-fermentado { --categoria-cor: #76429a; --categoria-fundo: #f6effc; --categoria-borda: #e5d2f2; }
+.categoria-outros { --categoria-cor: #375f8c; --categoria-fundo: #edf4fc; --categoria-borda: #cedef1; }
+.categoria-ausente { --categoria-cor: #68625d; --categoria-fundo: #f5f3f0; --categoria-borda: #e4dfda; }
 .cultivar-cabecalho { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 12px; }
 .cultivar-cabecalho > div { min-width: 0; }
 .cultivar-cabecalho h3 { margin-bottom: 6px; }
 .cultivar-resumo { color: #786450; font-size: 11px; line-height: 1.5; overflow-wrap: anywhere; }
 #paginaAnalise #cultivarCloudContainer {
-    display: block; min-height: 0 !important; flex: initial; width: 100%; padding: 10px; border-radius: 9px;
-    background: linear-gradient(100deg, #faf8f0dc, #ffffffc9), url('../img/sidebar_coffee_bg.jpg') center 68% / cover;
+    display: block; min-height: 0 !important; flex: initial; width: 100%; padding: 0; border-radius: 0;
+    background: transparent;
+}
+.cultivar-distribuicao-titulo { font-size: 13px; font-weight: 700; color: #33251d; margin: 2px 0 10px; }
+.cultivar-blocos { display: flex; flex-direction: column; gap: 5px; min-width: 0; width: 100%; }
+.cultivar-blocos-linha { display: flex; gap: 5px; min-width: 0; }
+.cultivar-bloco {
+    position: relative; isolation: isolate; flex-basis: 0; min-width: 0;
+    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
+    padding: 20px; border: 1px solid #ffffff40; border-radius: 9px;
+    background: linear-gradient(125deg, #89502c, #60371f); color: #fffaf2;
+    text-align: left; overflow: hidden; cursor: pointer;
+    transition: filter .15s, box-shadow .15s;
+    container-type: inline-size;
+}
+.cultivar-bloco[data-cor="1"] { background: linear-gradient(125deg, #466d46, #365636); }
+.cultivar-bloco[data-cor="2"] { background: linear-gradient(125deg, #c38a3b, #a4702c); }
+.cultivar-bloco[data-cor="3"] { background: linear-gradient(125deg, #b29777, #937859); }
+.cultivar-bloco::before {
+    content: ''; position: absolute; z-index: -1; right: -5px; bottom: -17px;
+    width: 126px; height: 145px; opacity: .18;
+    background: url('../img/cultivar-ramo.svg') center / contain no-repeat; pointer-events: none;
+}
+.cultivar-bloco-nome { font-size: clamp(17px, 12cqi, 30px); font-weight: 750; line-height: 1.16; overflow-wrap: anywhere; text-shadow: 0 1px 2px #32180a30; }
+.cultivar-bloco-valor { display: block; margin-top: 10px; font-size: clamp(14px, 9cqi, 23px); line-height: 1.3; font-variant-numeric: tabular-nums; }
+.cultivar-bloco-valor strong { font-size: 1.15em; font-weight: 700; }
+.cultivar-bloco:hover:not(:disabled) { filter: brightness(1.08); }
+.cultivar-bloco:focus-visible { outline: 3px solid #32180a; outline-offset: -4px; }
+.cultivar-bloco[aria-pressed="true"] { box-shadow: inset 0 0 0 3px #fff4d9; }
+.cultivar-bloco:disabled { cursor: default; }
+.cultivar-blocos .cultivar-vazio { min-height: 220px; border-radius: 9px; background: #f8f4ed; }
+.cultivar-cobertura.cultivar-lider {
+    display: flex; align-items: center; gap: 12px; margin: 12px 0 0; padding: 10px 14px;
+    border-radius: 8px; background: linear-gradient(100deg, #edf1df, #e3ebd4);
+    color: #28442a; font-size: 12px; font-weight: 700; line-height: 1.5; overflow-wrap: anywhere;
+}
+.cultivar-lider[hidden] { display: none; }
+.cultivar-trofeu { display: flex; flex-shrink: 0; color: #32603c; }
+.cultivar-trofeu svg { width: 24px; height: 24px; }
+@media (max-width: 480px) {
+    .cultivar-bloco { padding: 13px 10px; }
+    .cultivar-bloco-nome { font-size: 17px; }
+    .cultivar-bloco-valor { font-size: 14px; }
 }
 .cultivar-nuvem { position: relative; width: 100%; height: 360px; min-width: 0; }
 .cultivar-palavra {

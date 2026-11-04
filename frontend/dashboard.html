@@ -267,6 +267,7 @@
                         <option value="Natural">Natural (NAT)</option>
                         <option value="Cereja Descascado">Cereja Descascado (CD)</option>
                         <option value="Fermentado">Fermentado (FE)</option>
+                        <option value="Outros">Outros</option>
                     </select>
 <select id="filtroMunicipio" aria-label="Filtrar por município" onchange="filtrarTabelaEGraficos()" class="w-full border border-stone-200 rounded-xl p-3 text-sm outline-none focus:border-amber-500 bg-stone-50 text-stone-600">
                     <option value="">Todos os municípios</option>
@@ -284,7 +285,7 @@
                 <div class="analise-card cultivar-card bg-white/90 p-5 rounded-2xl shadow-[0_8px_28px_rgba(74,46,27,0.06)] border border-[#e9e1d7] flex flex-col">
                     <div class="cultivar-cabecalho">
                         <div>
-                            <h3>Destaque do Concurso <span class="analise-info" title="O tamanho dos nomes representa a frequência das cultivares nas amostras filtradas." aria-label="Tamanho proporcional à frequência">ⓘ</span></h3>
+                            <h3>Destaque do Concurso <span class="analise-info" title="Distribuição por quantidade de amostras. Selecione um bloco para filtrar; expanda para consultar a lista completa." aria-label="Distribuição das cultivares por quantidade de amostras">ⓘ</span></h3>
                             <p id="cultivarPredominante" class="cultivar-resumo"></p>
                         </div>
                         <button type="button" id="expandirCultivares" class="analise-botao" onclick="abrirModalCultivares()" aria-haspopup="dialog">Expandir gráfico</button>
@@ -343,7 +344,7 @@
             <div><h2 id="tituloModalCultivares">Cultivares do concurso</h2><p id="resumoModalCultivares"></p></div>
             <button type="button" class="analise-botao" onclick="document.getElementById('modalCultivares').close()" aria-label="Fechar gráfico expandido">Fechar ×</button>
         </div>
-        <div id="cultivarNuvemExpandida" class="cultivar-nuvem cultivar-nuvem-expandida" role="group" aria-label="Nuvem de cultivares dos dados filtrados"></div>
+        <div id="cultivarNuvemExpandida" class="cultivar-blocos" role="group" aria-label="Distribuição de cultivares dos dados filtrados"></div>
         <p id="cultivarCoberturaExpandida" class="cultivar-cobertura" aria-live="polite"></p>
         <section class="cultivar-consulta" aria-labelledby="tituloListaCultivares">
             <h3 id="tituloListaCultivares">Todas as cultivares dos dados filtrados</h3>
@@ -945,9 +946,14 @@
             }
 
             lista.innerHTML = dados.map(a => {
-                let corCodigo = 'text-[#4A2E1B] bg-[#FAF6F0] border border-[#EBE3D5]';
-                if (a.categoria === 'Cereja Descascado') corCodigo = 'text-emerald-800 bg-emerald-50 border border-emerald-100';
-                if (a.categoria === 'Fermentado') corCodigo = 'text-purple-800 bg-purple-50 border border-purple-100';
+                const categoriasVisuais = {
+                    'Natural': ['categoria-natural', 'Natural'],
+                    'Cereja Descascado': ['categoria-cd', 'Cereja Descascado / CD'],
+                    'Fermentado': ['categoria-fermentado', 'Fermentado'],
+                    'Outros': ['categoria-outros', 'Outros']
+                };
+                const [corCodigo, nomeCategoria] = Object.hasOwn(categoriasVisuais, a.categoria)
+                    ? categoriasVisuais[a.categoria] : ['categoria-ausente', 'Não informada'];
 
                 const altitude = a.altitude_media ? `${a.altitude_media}m` : '-';
                 const sensorial = a.perfil_sensorial ? a.perfil_sensorial : 'Não informado';
@@ -959,7 +965,7 @@
 
                 return `
                 <tr class="hover:bg-stone-50/80 transition group">
-                    <td class="p-5 font-mono font-bold whitespace-nowrap"><span class="px-2.5 py-1 rounded-md ${corCodigo}">${a.codigo_amostra || 'PENDENTE'}</span></td>
+                    <td class="p-5 font-mono font-bold whitespace-nowrap"><span class="amostra-codigo ${corCodigo}">${a.codigo_amostra || 'PENDENTE'}</span><span class="amostra-categoria ${corCodigo}">${nomeCategoria}</span></td>
                     <td class="p-5">
                         <button onclick="event.stopPropagation(); abrirModalPerfilProdutor('${a.nome_produtor.replace(/'/g, "\\'")}')" class="font-bold text-stone-900 hover:text-amber-600 transition text-left focus:outline-none block">
                             ${a.nome_produtor}

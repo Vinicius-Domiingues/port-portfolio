@@ -3,6 +3,7 @@ const bcrypt = require('../backend/node_modules/bcryptjs');
 const fs = require('node:fs');
 const path = require('node:path');
 const config = require('../backend/port-config.cjs');
+const categoriaDemo = require('./demo-categories.cjs');
 
 async function main() {
     const { database, ...connection } = config;
@@ -32,7 +33,7 @@ async function main() {
                 nome_produtor: `Produtor Demo ${String(p).padStart(2, '0')}`,
                 municipio: ['Cidade Exemplo Norte', 'Cidade Exemplo Sul', 'Cidade Exemplo Leste', 'Cidade Exemplo Oeste'][p % 4],
                 nome_propriedade: `Fazenda Demonstrativa ${p}`,
-                categoria: ['Natural', 'Cereja Descascado', 'Fermentado'][i % 3],
+                categoria: categoriaDemo(i),
                 cultivar: ['Arara', 'Bourbon', 'Catuaí Amarelo', 'Mundo Novo'][i % 4],
                 altitude_media: 850 + p * 25, altitude_maxima: 950 + p * 25,
                 idade: 25 + p * 3, telefone: '(00) 00000-0000', email: `produtor${p}@example.test`,
