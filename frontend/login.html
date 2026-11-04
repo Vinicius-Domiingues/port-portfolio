@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#382316">
-    <title>Login - Região Vulcânica</title>
+    <title>Login - Port | Demonstração</title>
     <link rel="stylesheet" href="assets/css/login.css">
 </head>
 <body>
@@ -27,37 +27,31 @@
         </section>
         <section class="form-panel" aria-labelledby="loginTitulo">
             <div class="login-card">
-                <header><h2 id="loginTitulo">Acessar Sistema</h2><p>Entre com suas credenciais para continuar no sistema de gestão de amostras.</p></header>
+                <header><h2 id="loginTitulo">Explore o Port</h2><p>O acesso de demonstração já está preenchido. Clique em Entrar para conhecer o sistema com dados fictícios.</p></header>
                 <div id="msgErro" class="error-message hidden" role="alert"></div>
                 <form id="formLogin" onsubmit="fazerLogin(event)">
                     <label class="sr-only" for="email">E-mail</label>
                     <div class="input-wrap">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="7" r="4"/><path d="M3 21v-2a9 7 0 0 1 18 0v2Z"/></svg>
-                        <input type="email" id="email" name="email" required placeholder="E-mail" autocomplete="username">
+                        <input type="email" id="email" name="email" required placeholder="E-mail" autocomplete="username" value="admin@example.test">
                     </div>
                     <label class="sr-only" for="senha">Senha</label>
                     <div class="input-wrap">
                         <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="9" width="16" height="12" rx="2"/><path d="M8 9V6a4 4 0 0 1 8 0v3M12 14v3"/><circle cx="12" cy="14" r="1"/></svg>
-                        <input type="password" id="senha" name="senha" required placeholder="Senha" autocomplete="current-password">
+                        <input type="password" id="senha" name="senha" required placeholder="Senha" autocomplete="current-password" value="PortDemo2026!">
                         <button id="btnSenha" class="password-toggle" type="button" onclick="alternarSenha('senha', 'olhoLogin')" aria-label="Mostrar senha" aria-pressed="false">
                             <svg id="olhoLogin" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/></svg>
                         </button>
                     </div>
                     <div class="form-options">
-                        <label class="remember" title="Lembrar seu e-mail neste dispositivo"><input id="lembrar" type="checkbox" aria-describedby="lembrarDescricao">Lembrar de mim</label>
-                        <span id="lembrarDescricao" class="sr-only">Salva seu e-mail neste dispositivo para o próximo acesso.</span>
-                        <button type="button" class="text-button" onclick="abrirAjuda(true)">Esqueceu a senha?</button>
+                        <button type="button" class="text-button" onclick="restaurarAcessoDemo()">Usar acesso de demonstração</button>
                     </div>
                     <button type="submit" id="btnEntrar" class="submit-button"><span>Entrar</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 12h17M14 5l7 7-7 7"/></svg></button>
                 </form>
-                <footer>Não tem uma conta? <button class="text-button" type="button" onclick="abrirAjuda(false)">Fale com o administrador</button></footer>
+                <footer>Portfólio demonstrativo · Dados inteiramente fictícios</footer>
             </div>
         </section>
     </main>
-    <dialog id="ajuda" aria-labelledby="ajudaTitulo" aria-describedby="ajudaTexto">
-        <h2 id="ajudaTitulo">Solicitar acesso</h2><p id="ajudaTexto"></p>
-        <form method="dialog"><button class="submit-button">Entendi</button></form>
-    </dialog>
     <script src="assets/js/config.js"></script>
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -73,18 +67,11 @@
         }
 
 
-        const emailSalvo = localStorage.getItem('loginEmailLembrado');
-        if (emailSalvo) {
-            document.getElementById('email').value = emailSalvo;
-            document.getElementById('lembrar').checked = true;
+        function restaurarAcessoDemo() {
+            document.getElementById('email').value = document.getElementById('email').defaultValue;
+            document.getElementById('senha').value = document.getElementById('senha').defaultValue;
         }
-        function abrirAjuda(recuperacao) {
-            document.getElementById('ajudaTitulo').textContent = recuperacao ? 'Recuperar acesso' : 'Solicitar acesso';
-            document.getElementById('ajudaTexto').textContent = recuperacao
-                ? 'Para redefinir sua senha, entre em contato com o administrador da sua organização e informe o e-mail cadastrado.'
-                : 'Entre em contato com o administrador da sua organização para solicitar uma conta na plataforma Região Vulcânica.';
-            document.getElementById('ajuda').showModal();
-        }
+        restaurarAcessoDemo();
         function alternarSenha(inputId, iconId) {
             const input = document.getElementById(inputId);
             const icon = document.getElementById(iconId);
@@ -116,11 +103,6 @@
                 });
                 const data = await response.json();
                 if (response.ok) {
-                    if (document.getElementById('lembrar').checked) {
-                        localStorage.setItem('loginEmailLembrado', document.getElementById('email').value.trim());
-                    } else {
-                        localStorage.removeItem('loginEmailLembrado');
-                    }
                     localStorage.setItem('authToken', data.token);
                     localStorage.setItem('usuarioNome', data.usuario.nome);
                     localStorage.setItem('usuarioEmail', data.usuario.email);

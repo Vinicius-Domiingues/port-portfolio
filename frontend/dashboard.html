@@ -11,7 +11,7 @@
         :root { --cafe-950: #211007; --cafe-900: #32180a; --cafe-800: #51280f; --cafe-700: #70401f; --creme: #f7f3ed; }
         body { background: var(--creme) !important; color: #33251d; }
         body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .48; background: radial-gradient(circle at 93% 3%, rgba(178, 137, 96, .14), transparent 20%), radial-gradient(circle at 60% 90%, rgba(178, 137, 96, .08), transparent 28%); }
-        #sidebar { width: 240px; transform: none; background: linear-gradient(180deg, rgba(39, 19, 8, .92) 0%, rgba(35, 16, 6, .72) 48%, rgba(26, 11, 4, .24) 100%), url('assets/img/sidebar_coffee_bg.jpg') center bottom / cover; border: 0; box-shadow: 8px 0 28px rgba(53, 30, 16, .12); }
+        #sidebar { width: 300px; max-width: calc(100vw - 20px); transform: none; background: linear-gradient(180deg, rgba(39, 19, 8, .92) 0%, rgba(35, 16, 6, .72) 48%, rgba(26, 11, 4, .24) 100%), url('assets/img/sidebar_coffee_bg.jpg') center bottom / cover; border: 0; box-shadow: 8px 0 28px rgba(53, 30, 16, .12); }
         #sidebar > div:first-child { background: transparent; border-color: rgba(255,255,255,.12); padding: 24px 22px; }
         #sidebar > div:first-child span { color: #fff; }
         #sidebar > div:first-child span:last-child { color: #e7c49d; }
@@ -29,7 +29,22 @@
         #sidebar #listaConcursosNav [class*="bg-[#FAF6F0]"] { background: rgba(189, 121, 65, .22) !important; border-color: rgba(235, 190, 140, .3) !important; }
         #sidebar #listaConcursosNav [class*="bg-[#FAF6F0]"] .text-\[\#4A2E1B\] { color: #fff0dc !important; }
         #sidebar > div:last-child { background: rgba(0,0,0,.13); border-color: rgba(255,255,255,.1); color: rgba(255,255,255,.66); }
-        #conteudoPrincipal { margin-left: 240px; padding: 24px 38px 34px; position: relative; }
+        #conteudoPrincipal { margin-left: 300px; padding: 24px 38px 34px; position: relative; }
+        #sidebar > div:nth-child(2) { min-height: 0; overflow-y: auto; overflow-x: hidden; }
+        #sidebar > div:first-child, #sidebar > div:last-child { flex-shrink: 0; }
+        #secaoConcursos { min-height: 0; }
+        #sidebar #listaConcursosNav { overflow-x: hidden; padding: 2px; }
+        #listaConcursosNav > div { min-width: 0; align-items: center; margin-bottom: 8px; }
+        #sidebar #listaConcursosNav [id^="btn-concurso-"] { min-width: 0; gap: 8px; padding: 13px 10px; background: rgba(31, 15, 6, .38); border-color: rgba(255,255,255,.1); }
+        #listaConcursosNav [id^="btn-concurso-"] > div:first-child { min-width: 0; padding-right: 0; white-space: normal; }
+        #sidebar #listaConcursosNav [id^="lbl-concurso-nome-"] { white-space: normal; overflow-wrap: anywhere; font-size: 12px; line-height: 1.5; color: #fff4e7; }
+        #sidebar #listaConcursosNav [id^="btn-concurso-"] > div:first-child > span:last-child { font-size: 10px; color: #e0cbb6; margin-top: 4px; }
+        #sidebar #listaConcursosNav [id^="btn-concurso-"]:hover { background: rgba(70, 37, 17, .65); }
+        #sidebar #listaConcursosNav > div > button:last-child { flex-shrink: 0; width: 28px; padding: 6px; border-radius: 7px; }
+        #sidebar #listaConcursosNav > div:focus-within > button:last-child { opacity: 1; }
+        #sidebar #listaConcursosNav button:focus-visible { outline: 2px solid #efb778; outline-offset: -2px; }
+        #sidebar #listaConcursosNav [class*="bg-[#FAF6F0]"] { background: rgba(100, 58, 26, .8) !important; }
+        @media (hover: none) { #sidebar #listaConcursosNav > div > button:last-child { opacity: 1; } }
         #sidebar.sidebar-recolhida { transform: translateX(-100%); }
         #conteudoPrincipal.sidebar-recolhida { margin-left: 0; }
         #conteudoPrincipal > div { max-width: none; }
