@@ -14,6 +14,10 @@ Este repositório é independente do sistema original. A base de demonstração 
 
 ## Executar
 
+Para testar a vitrine estática de consulta do GitHub Pages, execute `node scripts/preview-pages.cjs` na raiz e abra `http://127.0.0.1:4173/port-portfolio/`. Ela usa as amostras fictícias incluídas no repositório. Para publicar, envie os arquivos ao GitHub, selecione **Settings → Pages → Source → GitHub Actions** e execute manualmente **Actions → Publicar vitrine do Port → Run workflow** na `main`. O endereço publicado é informado na execução. O pacote inclui apenas as telas de consulta, seus recursos visuais e a seleção pública de dados demonstrativos.
+
+Para executar a aplicação completa com login e cadastros, siga os passos abaixo.
+
 Requisitos: Node.js, npm e MySQL 8.
 
 ```powershell

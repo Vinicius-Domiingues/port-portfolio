@@ -26,7 +26,7 @@ function renderizarListaSelosSidebar(dados) {
         : `Ver todas as solicitações (${total})`;
 
     if (!total) {
-        nav.innerHTML = '<p class="selo-vazio">Nenhuma solicitação por aqui ainda. Use o botão + para cadastrar uma amostra.</p>';
+        nav.innerHTML = userRole === 'visitante' ? '<p class="selo-vazio">Nenhuma solicitação nesta demonstração.</p>' : '<p class="selo-vazio">Nenhuma solicitação por aqui ainda. Use o botão + para cadastrar uma amostra.</p>';
         return;
     }
 

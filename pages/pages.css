@@ -1,0 +1,5 @@
+.demo-entrar { text-decoration: none; }
+.demo-voltar { display: inline-block; padding: 10px 14px; background: #fff; border: 1px solid #e6ded3; border-radius: 9px; color: #563a26; font-size: 13px; }
+#acaoCadastroPainel, #notificacoesContainer, #sidebar [onclick^="abrirModal"], .selo-adicionar, .selo-opcoes,
+[onclick^="editarPerfilProdutor"], .perfil-excluir, [onclick^="solicitarSelo"],
+.analise-tabela thead th:last-child, #tabelaAmostras tr td:nth-child(8) { display: none !important; }

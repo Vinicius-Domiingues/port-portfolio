@@ -12,9 +12,7 @@
         body { background: var(--creme) !important; color: #33251d; }
         body::before { content: ''; position: fixed; inset: 0; pointer-events: none; opacity: .48; background: radial-gradient(circle at 93% 3%, rgba(178, 137, 96, .14), transparent 20%), radial-gradient(circle at 60% 90%, rgba(178, 137, 96, .08), transparent 28%); }
         #sidebar { width: 300px; max-width: calc(100vw - 20px); transform: none; background: linear-gradient(180deg, rgba(39, 19, 8, .92) 0%, rgba(35, 16, 6, .72) 48%, rgba(26, 11, 4, .24) 100%), url('assets/img/sidebar_coffee_bg.jpg') center bottom / cover; border: 0; box-shadow: 8px 0 28px rgba(53, 30, 16, .12); }
-        #sidebar > div:first-child { background: transparent; border-color: rgba(255,255,255,.12); padding: 24px 22px; }
-        #sidebar > div:first-child span { color: #fff; }
-        #sidebar > div:first-child span:last-child { color: #e7c49d; }
+        #sidebar > div:first-child { background: radial-gradient(ellipse at 24% 48%, rgba(181,124,74,.16), transparent 75%); border-color: rgba(255,255,255,.16); padding: 20px 22px; }
         #sidebar > div:nth-child(2) { padding: 22px 14px; }
         #sidebar [id^="btnAba"] { background: transparent; color: #e5d8ca; box-shadow: none; }
         #sidebar [id^="btnAba"]:hover { background: rgba(255,255,255,.09); color: white; }
@@ -57,8 +55,10 @@
         header .w-12.h-12 { width: 40px !important; height: 40px !important; }
         header .bg-\[\#4A2E1B\] { padding-top: .625rem !important; padding-bottom: .625rem !important; }
         #sidebar > div:first-child { gap: 14px; }
-        #sidebar .sidebar-marca { display: block; flex: 1; min-width: 0; }
-        #sidebar > div:first-child img { display: block; width: 100%; height: auto; object-fit: contain; filter: none; opacity: 1; }
+        #sidebar .sidebar-marca { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 0; }
+        #sidebar .sidebar-marca img { width: 64px; height: 64px; flex: none; object-fit: contain; }
+        #sidebar .sidebar-marca strong { display: block; color: #fff; font-size: 22px; font-weight: 900; line-height: 1.05; letter-spacing: .04em; }
+        #sidebar .sidebar-marca small { display: block; margin-top: 5px; color: #f6d7aa; font-size: 10px; font-weight: 750; line-height: 1.35; letter-spacing: .09em; }
         #sidebar > div:first-child > button { flex-shrink: 0; }
         header > div:first-child > img { filter: sepia(.9) saturate(1.5) brightness(.52); }
         #cultivarCloudContainer { border-radius: 14px; overflow: hidden; background: linear-gradient(90deg, rgba(255,255,255,.94) 0%, rgba(255,255,255,.88) 58%, rgba(255,255,255,.6) 100%), url('assets/img/sidebar_coffee_bg.jpg') left center / cover; }
@@ -114,7 +114,8 @@
     <aside id="sidebar" class="w-72 bg-white flex flex-col border-r border-stone-200 z-20 shrink-0 fixed h-screen top-0 left-0 transform transition-transform duration-300 ease-in-out shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
         <div class="p-6 border-b border-stone-100 flex justify-between items-center bg-white">
             <a href="dashboard.html" aria-label="Port — Voltar ao início" title="Voltar ao início" class="sidebar-marca rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400">
-                <img src="assets/img/LOGO RV.png" alt="PORT — Portfólio Digital">
+                <img src="assets/img/logo branco.png" alt="" width="56" height="56">
+                <span><strong>PORT</strong><small>PORTFÓLIO<br>DIGITAL</small></span>
             </a>
             <button onclick="alternarSidebar()" class="w-7 h-7 rounded-full border border-stone-200 flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-50 transition shadow-sm" title="Recolher Menu">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
@@ -283,17 +284,17 @@
                 <div class="analise-card cultivar-card bg-white/90 p-5 rounded-2xl shadow-[0_8px_28px_rgba(74,46,27,0.06)] border border-[#e9e1d7] flex flex-col">
                     <div class="cultivar-cabecalho">
                         <div>
-                            <h3>Destaque do Concurso <span class="analise-info" title="Distribuição por quantidade de amostras. Selecione um bloco para filtrar; expanda para consultar a lista completa." aria-label="Distribuição das cultivares por quantidade de amostras">ⓘ</span></h3>
+                            <h3>Distribuição das cultivares</h3>
                             <p id="cultivarPredominante" class="cultivar-resumo"></p>
                         </div>
-                        <button type="button" id="expandirCultivares" class="analise-botao" onclick="abrirModalCultivares()" aria-haspopup="dialog">Expandir gráfico</button>
+                        <button type="button" id="expandirCultivares" class="analise-botao" onclick="abrirModalCultivares()" aria-haspopup="dialog"><span aria-hidden="true">⤢</span> Expandir</button>
                     </div>
                     <div id="cultivarCloudContainer" class="w-full flex-1 min-h-[180px] flex items-center justify-center"></div>
                 </div>
                 <!-- Ranking sensorial por município -->
                 <div class="analise-card ranking-card bg-white/90 p-5 rounded-2xl shadow-[0_8px_28px_rgba(74,46,27,0.06)] border border-[#e9e1d7] md:col-span-2 min-w-0">
                     <div class="municipio-cabecalho">
-                        <h3 id="tituloNotasCidade" class="text-xs font-extrabold uppercase tracking-widest" style="color: #70513b">Média Sensorial por Município</h3>
+                        <h3 id="tituloNotasCidade">Média sensorial por município</h3>
                         <span class="bg-stone-50 border border-stone-200 rounded-lg px-2.5 py-1 text-[10px] font-bold text-stone-500">Pontuação (0–100)</span>
                     </div>
                     <div id="graficoNotasCidade" role="region" aria-labelledby="tituloNotasCidade" tabindex="0"></div>
@@ -737,7 +738,7 @@
         }
         // ─────────────────────────────────────────────────────────────
 
-        async function init() {
+        async function autenticarPainel() {
             try {
                 const response = await apiFetch(API_BASE_URL + '/api/auth/me');
                 if (!response.ok) return;
@@ -754,7 +755,13 @@
                 return;
             }
             verificarAuth();
-            const role = localStorage.getItem('usuarioRole');
+            return localStorage.getItem('usuarioRole');
+        }
+
+        async function init() {
+            const role = window.iniciarVitrine ? await window.iniciarVitrine() : await autenticarPainel();
+            if (!role) return;
+            userRole = role;
             if (role === 'produtor') {
                 await carregarSolicitacoesSelos();
             } else {

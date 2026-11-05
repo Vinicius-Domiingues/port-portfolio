@@ -63,9 +63,15 @@
 }
 .cultivar-distribuicao-titulo { font-size: 13px; font-weight: 700; color: #33251d; margin: 2px 0 10px; }
 .cultivar-blocos { display: flex; flex-direction: column; gap: 5px; min-width: 0; width: 100%; }
-.cultivar-blocos-linha { display: flex; gap: 6px; min-width: 0; min-height: 108px; }
-.cultivar-ver-detalhes { margin-top: 5px; font-size: 12px; font-weight: 600; }
-.cultivar-total { margin-top: 10px; color: #786450; font-size: 11px; }
+.cultivar-blocos-linha { display: flex; gap: 9px; min-width: 0; min-height: 78px; }
+@media (min-width: 1251px) {
+    #paginaAnalise .cultivar-card { align-self: stretch; }
+    #paginaAnalise #cultivarCloudContainer { display: flex; flex: 1 0 auto; align-items: stretch; }
+    #cultivarCloudContainer .cultivar-blocos-linha { flex: 1 0 auto; }
+    #cultivarCloudContainer .cultivar-bloco { justify-content: center; }
+    #cultivarCloudContainer .cultivar-participacao { margin-top: 5px; }
+}
+.cultivar-ver-detalhes { margin-bottom: 4px; color: #355936; font-size: 10px; font-weight: 650; }
 .cultivar-ranking-linha { display: grid; grid-template-columns: minmax(130px, 1fr) minmax(80px, 2fr) 105px; align-items: center; gap: 15px; width: 100%; padding: 10px 4px; text-align: left; border-bottom: 1px solid #ede5da; font-size: 13px; }
 .cultivar-ranking-linha:hover:not(:disabled) { background: #f3eee7; }
 .cultivar-ranking-nome { overflow-wrap: anywhere; font-weight: 650; }
@@ -78,43 +84,36 @@
     .cultivar-ranking-valor { grid-column: 2; grid-row: 1; font-size: 12px; }
 }
 .cultivar-bloco {
+    --acento: #764b31;
     position: relative; isolation: isolate; flex-basis: 0; min-width: 0;
-    display: flex; flex-direction: column; justify-content: center; align-items: flex-start;
-    padding: 20px; border: 1px solid #ffffff40; border-radius: 9px;
-    background: linear-gradient(125deg, #89502c, #60371f); color: #fffaf2;
-    text-align: left; overflow: hidden; cursor: pointer;
-    transition: filter .15s, box-shadow .15s;
-    container-type: inline-size;
+    display: flex; flex-direction: column; align-items: flex-start;
+    padding: 10px 14px 9px; border: 1px solid #ebe1d7; border-left: 5px solid var(--acento);
+    border-radius: 7px; background: #faf7f3; color: #37281f; text-align: left;
+    overflow: hidden; cursor: pointer;
 }
-.cultivar-bloco[data-cor="1"] { background: linear-gradient(125deg, #466d46, #365636); }
-.cultivar-bloco[data-cor="2"] { background: linear-gradient(125deg, #c38a3b, #a4702c); }
-.cultivar-bloco[data-cor="3"] { background: linear-gradient(125deg, #b29777, #937859); }
+.cultivar-bloco[data-cor="1"] { --acento: #396541; }
+.cultivar-bloco[data-cor="2"] { --acento: #bc891f; }
+.cultivar-bloco[data-cor="3"] { --acento: #a87460; }
+.cultivar-bloco[data-cor="4"] { --acento: #84521e; }
+.cultivar-bloco[data-cor="demais"] { --acento: #968976; }
 .cultivar-bloco::before {
-    content: ''; position: absolute; z-index: -1; right: -5px; bottom: -17px;
-    width: 126px; height: 145px; opacity: .18;
-    background: url('../img/cultivar-ramo.svg') center / contain no-repeat; pointer-events: none;
+    content: ''; position: absolute; z-index: -1; top: 4px; right: 6px; width: 25%; height: 60%;
+    background: url('../img/cultivar-ramo.svg') right center / contain no-repeat;
+    opacity: .18; pointer-events: none;
 }
-.cultivar-bloco-nome { font-size: clamp(17px, 12cqi, 30px); font-weight: 750; line-height: 1.16; overflow-wrap: anywhere; text-shadow: 0 1px 2px #32180a30; }
-.cultivar-bloco-valor { display: block; margin-top: 10px; font-size: clamp(14px, 9cqi, 23px); line-height: 1.3; font-variant-numeric: tabular-nums; }
-.cultivar-bloco-valor strong { font-size: 1.15em; font-weight: 700; }
-.cultivar-bloco:hover:not(:disabled) { filter: brightness(1.08); }
-.cultivar-bloco:focus-visible { outline: 3px solid #32180a; outline-offset: -4px; }
-.cultivar-bloco[aria-pressed="true"] { box-shadow: inset 0 0 0 3px #fff4d9; }
+.cultivar-bloco-nome { max-width: 86%; font-size: 17px; font-weight: 750; line-height: 1.22; overflow-wrap: anywhere; }
+.cultivar-bloco-valor { margin: 4px 0; color: #5d4838; font-size: 12px; line-height: 1.3; font-variant-numeric: tabular-nums; }
+.cultivar-bloco-valor strong { color: #38251a; font-size: 20px; }
+.cultivar-participacao { display: block; width: 87%; height: 5px; margin-top: auto; border-radius: 5px; background: #e7dfd5; }
+.cultivar-participacao::before { content: ''; display: block; width: var(--participacao); height: 100%; border-radius: inherit; background: var(--acento); }
+.cultivar-bloco:hover:not(:disabled), .cultivar-bloco[aria-pressed="true"] { background: #f2ece3; }
+.cultivar-bloco:focus-visible { outline: 2px solid #684728; outline-offset: -3px; }
 .cultivar-bloco:disabled { cursor: default; }
-.cultivar-blocos .cultivar-vazio { min-height: 220px; border-radius: 9px; background: #f8f4ed; }
-.cultivar-cobertura.cultivar-lider {
-    display: flex; align-items: center; gap: 12px; margin: 12px 0 0; padding: 10px 14px;
-    border-radius: 8px; background: linear-gradient(100deg, #edf1df, #e3ebd4);
-    color: #28442a; font-size: 12px; font-weight: 700; line-height: 1.5; overflow-wrap: anywhere;
-}
+.cultivar-blocos .cultivar-vazio { min-height: 100px; }
+.cultivar-cobertura.cultivar-lider { display: flex; align-items: center; gap: 8px; margin: 10px 0 0; padding: 7px 10px; border-radius: 6px; background: #eef1e6; color: #345031; font-size: 11px; font-weight: 650; }
 .cultivar-lider[hidden] { display: none; }
-.cultivar-trofeu { display: flex; flex-shrink: 0; color: #32603c; }
-.cultivar-trofeu svg { width: 24px; height: 24px; }
-@media (max-width: 480px) {
-    .cultivar-bloco { padding: 13px 10px; }
-    .cultivar-bloco-nome { font-size: 17px; }
-    .cultivar-bloco-valor { font-size: 14px; }
-}
+.cultivar-trofeu { flex: none; }
+.cultivar-trofeu svg { width: 16px; height: 16px; }
 .cultivar-nuvem { position: relative; width: 100%; height: 360px; min-width: 0; }
 .cultivar-palavra {
     position: absolute; display: block; padding: 0; border: 0; background: none;
@@ -165,12 +164,12 @@
 }
 #paginaAnalise .municipio-ranking { min-width: 450px; --rank-columns: 32px minmax(90px, 132px) minmax(90px, 1fr) 73px 48px; }
 #paginaAnalise .municipio-media, #paginaAnalise .municipio-linha { gap: 9px; }
-#paginaAnalise .municipio-linha { min-height: 39px; font-size: 12px; }
-#paginaAnalise .municipio-posicao { padding: 6px 0; border-radius: 5px; }
+#paginaAnalise .municipio-linha { min-height: 30px; font-size: 12px; }
+#paginaAnalise .municipio-posicao { padding: 3px 0; border-radius: 5px; }
 #paginaAnalise .municipio-nota { font-size: 14px; }
 #paginaAnalise .municipio-trilho { height: 11px; }
-#paginaAnalise .municipio-trilho::after { top: -15px; height: 40px; }
-#paginaAnalise .municipio-linha:first-child .municipio-trilho::before { top: -15px; }
+#paginaAnalise .municipio-trilho::after { top: -10px; height: 30px; }
+#paginaAnalise .municipio-linha:first-child .municipio-trilho::before { top: -10px; }
 #paginaAnalise #graficoNotasCidade { max-height: none; overflow-x: auto; }
 #paginaAnalise .municipio-escala { font-size: 9px; }
 #paginaAnalise .analise-tabela { border-color: var(--analise-borda); border-radius: 12px; box-shadow: 0 5px 20px #603b1705; background: #fffefd; }
@@ -227,9 +226,8 @@
     #nomeUsuarioBtn { max-width: 65px; }
     #paginaAnalise .municipio-ranking { min-width: 0; --rank-columns: 24px minmax(60px, .95fr) minmax(34px, 1fr) 59px 34px; }
     #paginaAnalise .municipio-media, #paginaAnalise .municipio-linha { gap: 5px; }
-    #paginaAnalise .municipio-linha { min-height: 32px; font-size: 9px; }
+    #paginaAnalise .municipio-linha { font-size: 9px; }
     #paginaAnalise .municipio-nota { font-size: 10px; }
-    #paginaAnalise .municipio-trilho::after { top: -12px; height: 33px; }
     #paginaAnalise .municipio-media { font-size: 9px; }
     #paginaAnalise .municipio-media span { grid-column: 2 / -1; }
     #paginaAnalise .municipio-escala { text-align: left; }
@@ -238,5 +236,6 @@
 .cultivar-palavra:disabled { cursor: default; }
 .cultivar-palavra:disabled:hover { text-decoration: none; }
 .cultivar-lista button:disabled { cursor: default; }
-.cultivar-cabecalho h3 { text-transform: uppercase; font-weight: 750; }
+.cultivar-cabecalho h3, .municipio-cabecalho h3 { font-size: 16px; color: #39271a; font-weight: 750; margin-bottom: 2px; }
+#expandirCultivares { gap: 5px; }
 .cultivar-modal button:focus-visible { outline: 2px solid #bd864c; outline-offset: 3px; }

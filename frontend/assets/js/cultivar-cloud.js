@@ -83,7 +83,7 @@ function observarNuvemCultivares(area, cobertura) {
                 bloco.setAttribute('aria-label', `Ver as demais ${todas.length - 5} cultivares: ${entrada.quantidade} amostras, ${percentualCultivar(entrada.quantidade)}`);
             }
             bloco.className = 'cultivar-bloco';
-            bloco.dataset.cor = entrada.agregado ? '3' : (i + indice) % 4;
+            bloco.dataset.cor = entrada.agregado ? 'demais' : i + indice;
             bloco.style.flexGrow = 1;
             if (!entrada.agregado) bloco.setAttribute('aria-pressed', String(document.getElementById('filtroCultivar').value === entrada.filtro));
             const nome = document.createElement('span');
@@ -103,6 +103,11 @@ function observarNuvemCultivares(area, cobertura) {
                 detalhes.textContent = 'Ver detalhes →';
                 bloco.append(detalhes);
             }
+            const trilho = document.createElement('span');
+            trilho.className = 'cultivar-participacao';
+            trilho.setAttribute('aria-hidden', 'true');
+            trilho.style.setProperty('--participacao', (100 * entrada.quantidade / nuvemCultivares.total) + '%');
+            bloco.append(trilho);
             linha.append(bloco);
         });
         area.append(linha);
@@ -113,11 +118,11 @@ function observarNuvemCultivares(area, cobertura) {
     const icone = document.createElement('span');
     icone.className = 'cultivar-trofeu';
     icone.setAttribute('aria-hidden', 'true');
-    icone.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M8 3h8v6a4 4 0 0 1-8 0V3ZM8 5H4v3a4 4 0 0 0 5 4m7-7h4v3a4 4 0 0 1-5 4M12 13v5m-4 3h8m-7-3h6v3"/></svg>';
+    icone.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M20 3C12 4 4 6 4 13a6 6 0 0 0 6 6c7 0 9-8 10-16ZM3 21l12-12"/></svg>';
     const mensagem = document.createElement('span');
     mensagem.textContent = lideres.length > 1
         ? `Empate: ${lideres.length} cultivares com ${lideres[0].quantidade} amostra(s) cada.`
-        : lideres.length ? `${lideres[0].nome} é a cultivar mais frequente.` : 'Nenhuma cultivar informada.';
+        : lideres.length ? `${lideres[0].nome} lidera com ${lideres[0].quantidade} ${lideres[0].quantidade === 1 ? 'amostra' : 'amostras'} · ${percentualCultivar(lideres[0].quantidade)} do total.` : 'Nenhuma cultivar informada.';
     cobertura.replaceChildren(icone, mensagem);
     cobertura.hidden = !entradas.length;
     return () => {};
@@ -130,26 +135,18 @@ function renderizarNuvemCultivares(dados) {
     container.replaceChildren();
     container.parentElement.querySelector('.cultivar-detalhes')?.remove();
     container.parentElement.querySelector('.cultivar-cobertura')?.remove();
-    container.parentElement.querySelector('.cultivar-total')?.remove();
     const resumo = document.getElementById('cultivarPredominante');
-    resumo.textContent = 'Distribuição das cultivares nas amostras';
+    resumo.textContent = dados.length === 1 ? 'Participação em 1 amostra' : `Participação nas ${dados.length} amostras`;
     const area = document.createElement('div');
     area.className = 'cultivar-blocos';
     area.setAttribute('role', 'group');
     area.setAttribute('aria-label', 'Cultivares por frequência. Selecione um nome para filtrar.');
-    const tituloGrafico = document.createElement('h4');
-    tituloGrafico.className = 'cultivar-distribuicao-titulo';
-    tituloGrafico.textContent = 'Distribuição das cultivares';
-    container.append(tituloGrafico, area);
+    container.append(area);
     const cobertura = document.createElement('p');
     cobertura.className = 'cultivar-cobertura';
     cobertura.setAttribute('aria-live', 'polite');
     container.after(cobertura);
     nuvemCultivares.limparPainel = observarNuvemCultivares(area, cobertura);
-    const total = document.createElement('p');
-    total.className = 'cultivar-total';
-    total.textContent = (nuvemCultivares.entradas.length > 5 ? '5 principais + demais' : `${nuvemCultivares.entradas.length} cultivares`) + ` · ${dados.length} amostras`;
-    cobertura.after(total);
     if (document.getElementById('modalCultivares').open) atualizarModalCultivares();
 }
 function atualizarModalCultivares() {
