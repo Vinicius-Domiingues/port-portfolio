@@ -17,12 +17,31 @@ function buildPages() {
     };
     copy(path.join(pages,'index.html'), 'index.html');
     copy(path.join(pages,'pages.css'), 'pages.css');
+    copy(path.join(pages,'guia.js'), 'assets/js/guia.js');
+    copy(path.join(pages,'administrador.js'), 'assets/js/administrador.js');
+    const admin = fs.readFileSync(path.join(frontend,'registro.html'),'utf8')
+        .replace('style="visibility:hidden"', '')
+        .replaceAll('Região Vulcânica', 'Port')
+        .replace('REGIÃO<br>VULCÂNICA<small>BUSINESS INTELLIGENCE</small>', 'PORT<small>PORTFÓLIO DIGITAL</small>')
+        .replace('</head>', '<link rel="stylesheet" href="pages.css"></head>')
+        .replace(/<dialog[\s\S]*$/, '<script src="assets/js/administrador.js"></script><script src="assets/js/guia.js"></script></body></html>')
+        .replace('<main>', '<main><aside id="avisoAdmin" class="demo-aviso"><strong>Administrador · demonstração de consulta</strong><p>Você pode explorar as contas e permissões. Cadastro, edição e alterações de acesso estão desativados para preservar a experiência dos próximos visitantes.</p></aside>');
+    fs.writeFileSync(path.join(output,'administrador.html'), admin);
+    const cadastro = fs.readFileSync(path.join(frontend,'cadastro.html'),'utf8')
+        .replaceAll('Região Vulcânica', 'Port')
+        .replace('</head>', '<link rel="stylesheet" href="pages.css"></head>')
+        .replace("const role = localStorage.getItem('usuarioRole');", "const role = 'organizador';")
+        .replace('if (!token) {', 'if (!token && !window.iniciarVitrine) {')
+        .replace("const amostraEdit = JSON.parse(localStorage.getItem('amostraParaEditar'));", 'const amostraEdit = null;')
+        .replace('const authHeader = token ?', 'const authHeader = false ?')
+        .replace('<form', '<aside class="demo-aviso" role="note"><strong>Cadastro demonstrativo</strong><p>Explore as etapas e preencha os campos com dados fictícios. O salvamento está desativado para preservar os dados dos próximos visitantes. Nenhuma informação preenchida será enviada.</p></aside><form');
+    fs.writeFileSync(path.join(output,'cadastro.html'), cadastro.replace(/<\/body>\s*<\/html>\s*$/, '<script src="assets/js/guia.js"></script>\n</body>\n</html>'));
     copy(path.join(pages,'config.js'), 'assets/js/config.js');
     const dashboard = fs.readFileSync(path.join(frontend,'dashboard.html'),'utf8');
-    fs.writeFileSync(path.join(output,'dashboard.html'), dashboard.replace('</head>', '<link rel="stylesheet" href="pages.css">\n</head>'));
+    fs.writeFileSync(path.join(output,'dashboard.html'), dashboard.replace('</head>', '<link rel="stylesheet" href="pages.css">\n</head>').replace(/<\/body>\s*<\/html>\s*$/, '<script src="assets/js/guia.js"></script>\n</body>\n</html>'));
     const assets = {
-        css:['login','dashboard-analise','perfil','produtores','selos-sidebar'].map(name=>name+'.css'),
-        js:['cultivar-cloud','dashboard-analise','perfil','produtores','relatorio-produtor','selos-sidebar'].map(name=>name+'.js'),
+        css:['login','dashboard-analise','perfil','produtores','selos-sidebar','usuarios','cadastro'].map(name=>name+'.css'),
+        js:['cultivar-cloud','dashboard-analise','perfil','produtores','relatorio-produtor','selos-sidebar','cadastro-produtor'].map(name=>name+'.js'),
         img:['logo branco.png','logo.png','perfil_cover.png','sidebar_coffee_bg.jpg','seal_coffee_bg.jpg','Img inicial login.png','cultivar-ramo.svg']
     };
     for (const [type, files] of Object.entries(assets)) for (const file of files) {

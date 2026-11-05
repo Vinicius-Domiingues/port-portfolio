@@ -1,5 +1,32 @@
 .demo-entrar { text-decoration: none; }
+.demo-admin .resumo:nth-child(2) .icone-resumo { background:#e8f2e9; color:#397349; }
+.demo-admin .resumo:nth-child(3) .icone-resumo { background:#fff1d8; color:#a27324; }
+.demo-admin .resumo { gap:22px; }
+.demo-admin .resumo p { color:#5d4d40; font-weight:600; }
+.demo-admin .demo-avatar-admin { background:#e8f2e9; color:#397349; }
+.demo-admin .demo-conta-legenda { display:block; margin-top:5px; color:#8a7a6c; font-size:11px; }
+.demo-admin .demo-permissao { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#397349; white-space:nowrap; }
+.demo-admin .demo-permissao svg { width:18px; height:18px; }
+.demo-admin .demo-acesso-selos { background:#f6eddf; color:#80572e; }
+.demo-admin #listaUsuarios tr:hover { background:#faf7f2; }
+.demo-admin #avisoAdmin { margin-top:16px; }
+.guia-pular { display:block; margin-top:12px; border:0; background:none; color:#70523e; font-size:12px; cursor:pointer; text-decoration:underline; }
+.guia-pular[hidden] { display:none; }
+.demo-aviso { padding:18px; margin-bottom:20px; border:1px solid #d6c5b4; border-radius:12px; background:#f6efe2; color:#4a2e1b; }
+.demo-aviso p { margin-top:8px; font-size:14px; line-height:1.5; }
+button:disabled { cursor:not-allowed; opacity:.55; }
+#menuUsuarioContainer { display:flex; gap:8px; flex-wrap:wrap; }
+.guia-reabrir { position:fixed; right:18px; bottom:18px; z-index:80; border:1px solid #d6c5b4; border-radius:24px; padding:10px 16px; background:#fffdf9; color:#4a2e1b; font-size:13px; box-shadow:0 3px 14px #34201418; cursor:pointer; }
+.guia-balao { position:fixed; z-index:90; width:310px; max-width:calc(100vw - 24px); padding:20px; border:1px solid #d6c5b4; border-radius:14px; background:#fffdf9; color:#4a2e1b; box-shadow:0 8px 30px #34201426; }
+.guia-balao[hidden] { display:none; }
+.guia-balao small { font-size:10px; letter-spacing:.08em; color:#80634b; }
+.guia-balao h2 { font-size:17px; font-weight:750; margin:8px 0; }
+.guia-balao p { font-size:13px; line-height:1.6; margin-bottom:14px; }
+.guia-fechar { position:absolute; top:7px; right:10px; padding:4px 8px; font-size:22px; cursor:pointer; }
+.guia-avancar { background:#4a2e1b; color:white; padding:9px 13px; border-radius:8px; font-size:12px; cursor:pointer; }
+.guia-alvo { outline:2px solid #bd8b50; outline-offset:4px; border-radius:4px; }
+.guia-balao button:focus-visible, .guia-reabrir:focus-visible { outline:3px solid #bd8b50; outline-offset:3px; }
 .demo-voltar { display: inline-block; padding: 10px 14px; background: #fff; border: 1px solid #e6ded3; border-radius: 9px; color: #563a26; font-size: 13px; }
-#acaoCadastroPainel, #notificacoesContainer, #sidebar [onclick^="abrirModal"], .selo-adicionar, .selo-opcoes,
+#notificacoesContainer, #sidebar [onclick^="abrirModal"], .selo-adicionar, .selo-opcoes,
 [onclick^="editarPerfilProdutor"], .perfil-excluir, [onclick^="solicitarSelo"],
 .analise-tabela thead th:last-child, #tabelaAmostras tr td:nth-child(8) { display: none !important; }

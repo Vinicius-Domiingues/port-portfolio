@@ -3,11 +3,18 @@ const API_BASE_URL = location.origin;
 let vitrine;
 
 window.iniciarVitrine = async function () {
-    const voltar = document.createElement('a');
-    voltar.className = 'demo-voltar';
-    voltar.href = 'index.html';
-    voltar.textContent = '← Início';
-    document.getElementById('menuUsuarioContainer').replaceChildren(voltar);
+    document.getElementById('botoesAuth').classList.add('hidden');
+    document.getElementById('menuUsuarioLogado').classList.remove('hidden');
+    document.getElementById('avatarUsuario').textContent = 'AD';
+    document.getElementById('nomeUsuarioBtn').textContent = 'Administrador';
+    document.getElementById('nomeDropdown').textContent = 'Administrador Demo';
+    document.getElementById('emailDropdown').textContent = 'Demonstração · somente consulta';
+    const admin = document.getElementById('gestaoUsuarios');
+    admin.classList.remove('hidden');
+    admin.href = 'administrador.html';
+    const sair = document.querySelector('#dropdownUsuario button');
+    sair.removeAttribute('onclick');
+    sair.onclick = () => { location.href = 'index.html'; };
     try {
         const response = await fetch('data/demo.json');
         if (!response.ok) throw new Error('Dados indisponíveis');
@@ -40,7 +47,12 @@ function agruparProdutores() {
 }
 
 async function apiFetch(url, options = {}) {
-    if ((options.method || 'GET').toUpperCase() !== 'GET') return Response.json({error:'Demonstração disponível para consulta.'}, {status:405});
+    if ((options.method || 'GET').toUpperCase() !== 'GET') return Response.json({error:'Você pode explorar e preencher o formulário. O salvamento está desativado nesta demonstração para preservar os dados dos próximos visitantes.'}, {status:405});
+    if (!vitrine) {
+        const response = await fetch('data/demo.json');
+        if (!response.ok) return Response.json({error:'Dados indisponíveis.'}, {status:503});
+        vitrine = await response.json();
+    }
     const {pathname, searchParams} = new URL(url, location.href);
     if (pathname === '/api/concursos') return Response.json(vitrine.concursos);
     if (pathname === '/api/amostras') {
@@ -52,7 +64,7 @@ async function apiFetch(url, options = {}) {
     if (pathname.startsWith('/api/produtores/')) {
         const nome = decodeURIComponent(pathname.slice('/api/produtores/'.length));
         const produtor = agruparProdutores().find(p => p.nome_produtor === nome);
-        if (produtor) return Response.json({produtor, amostras:vitrine.amostras.filter(a => a.nome_produtor === nome).map(a => {
+        if (produtor) return Response.json({produtor, cadastro:vitrine.amostras.find(a => a.nome_produtor === nome), amostras:vitrine.amostras.filter(a => a.nome_produtor === nome).map(a => {
             const concurso = vitrine.concursos.find(c => c.id === a.concurso_id);
             return {...a, nome_concurso:concurso?.nome, ano_concurso:concurso?.ano};
         })});
