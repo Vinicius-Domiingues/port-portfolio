@@ -36,7 +36,7 @@ Abra `frontend/login.html` no navegador. A API local utiliza `http://localhost:3
 | Administrador | admin@example.test | PortDemo2026! |
 | Produtor | produtor1@example.test | PortDemo2026! |
 
-O seed cria 13 usuários, 12 produtores, 3 concursos, 48 amostras e 12 solicitações de selo. Ele recusa sobrescrever um banco já inicializado. Não utiliza dados nem laudos reais.
+O seed cria 6 usuários, 50 produtores, 2 concursos e 67 amostras, sem solicitações de selo. Ele recusa sobrescrever um banco já inicializado. Não utiliza dados nem laudos reais.
 
 ## Verificar
 

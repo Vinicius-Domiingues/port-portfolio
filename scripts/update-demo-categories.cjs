@@ -2,6 +2,9 @@ const mysql = require('../backend/node_modules/mysql2/promise');
 const config = require('../backend/port-config.cjs');
 const categoriaDemo = require('./demo-categories.cjs');
 async function main() {
+    if (require('node:fs').existsSync(require('node:path').join(__dirname, '../backend/demo-data.json'))) {
+        throw new Error('A base atual preserva as categorias do original. Este script serve somente à demonstração antiga de 48 amostras.');
+    }
     if (config.database !== 'port_demo') throw new Error('Permitido somente no Port.');
     const db = await mysql.createConnection(config);
     try {

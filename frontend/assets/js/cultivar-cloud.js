@@ -61,7 +61,9 @@ function preencherListaCultivares(tbody) {
 /* Blocos ordenados por frequência. O espaço mínimo preserva a leitura dos nomes. */
 function observarNuvemCultivares(area, cobertura) {
     area.replaceChildren();
-    const entradas = nuvemCultivares.entradas;
+    const todas = nuvemCultivares.entradas;
+    const entradas = todas.slice(0, 5);
+    if (todas.length > 5) entradas.push({nome: 'Demais cultivares', quantidade: todas.slice(5).reduce((s, e) => s + e.quantidade, 0), agregado: true});
     if (!entradas.length) {
         const vazio = document.createElement('p');
         vazio.className = 'cultivar-vazio';
@@ -72,14 +74,18 @@ function observarNuvemCultivares(area, cobertura) {
         const par = entradas.slice(i, i + 2);
         const linha = document.createElement('div');
         linha.className = 'cultivar-blocos-linha';
-        const totalLinha = par.reduce((total, entrada) => total + entrada.quantidade, 0);
-        linha.style.minHeight = Math.max(112, Math.min(190, 280 * totalLinha / nuvemCultivares.total)) + 'px';
         par.forEach((entrada, indice) => {
-            const bloco = botaoCultivar(entrada);
+            const bloco = entrada.agregado ? document.createElement('button') : botaoCultivar(entrada);
+            if (entrada.agregado) {
+                bloco.type = 'button';
+                bloco.addEventListener('click', abrirModalCultivares);
+                bloco.setAttribute('aria-haspopup', 'dialog');
+                bloco.setAttribute('aria-label', `Ver as demais ${todas.length - 5} cultivares: ${entrada.quantidade} amostras, ${percentualCultivar(entrada.quantidade)}`);
+            }
             bloco.className = 'cultivar-bloco';
-            bloco.dataset.cor = (i + indice) % 4;
-            bloco.style.flexGrow = entrada.quantidade;
-            bloco.setAttribute('aria-pressed', String(document.getElementById('filtroCultivar').value === entrada.filtro));
+            bloco.dataset.cor = entrada.agregado ? '3' : (i + indice) % 4;
+            bloco.style.flexGrow = 1;
+            if (!entrada.agregado) bloco.setAttribute('aria-pressed', String(document.getElementById('filtroCultivar').value === entrada.filtro));
             const nome = document.createElement('span');
             nome.className = 'cultivar-bloco-nome';
             nome.textContent = entrada.nome;
@@ -91,11 +97,17 @@ function observarNuvemCultivares(area, cobertura) {
             percentual.textContent = ' (' + percentualCultivar(entrada.quantidade) + ')';
             valor.append(quantidade, percentual);
             bloco.replaceChildren(nome, valor);
+            if (entrada.agregado) {
+                const detalhes = document.createElement('span');
+                detalhes.className = 'cultivar-ver-detalhes';
+                detalhes.textContent = 'Ver detalhes →';
+                bloco.append(detalhes);
+            }
             linha.append(bloco);
         });
         area.append(linha);
     }
-    const informadas = entradas.filter(entrada => entrada.filtro !== null);
+    const informadas = todas.filter(entrada => entrada.filtro !== null);
     const lideres = informadas.filter(entrada => entrada.quantidade === informadas[0]?.quantidade);
     cobertura.className = 'cultivar-cobertura cultivar-lider';
     const icone = document.createElement('span');
@@ -118,6 +130,7 @@ function renderizarNuvemCultivares(dados) {
     container.replaceChildren();
     container.parentElement.querySelector('.cultivar-detalhes')?.remove();
     container.parentElement.querySelector('.cultivar-cobertura')?.remove();
+    container.parentElement.querySelector('.cultivar-total')?.remove();
     const resumo = document.getElementById('cultivarPredominante');
     resumo.textContent = 'Distribuição das cultivares nas amostras';
     const area = document.createElement('div');
@@ -133,6 +146,10 @@ function renderizarNuvemCultivares(dados) {
     cobertura.setAttribute('aria-live', 'polite');
     container.after(cobertura);
     nuvemCultivares.limparPainel = observarNuvemCultivares(area, cobertura);
+    const total = document.createElement('p');
+    total.className = 'cultivar-total';
+    total.textContent = (nuvemCultivares.entradas.length > 5 ? '5 principais + demais' : `${nuvemCultivares.entradas.length} cultivares`) + ` · ${dados.length} amostras`;
+    cobertura.after(total);
     if (document.getElementById('modalCultivares').open) atualizarModalCultivares();
 }
 function atualizarModalCultivares() {
@@ -140,9 +157,30 @@ function atualizarModalCultivares() {
     const distintas = nuvemCultivares.entradas.length;
     document.getElementById('resumoModalCultivares').textContent = distintas + ' nomes · ' + nuvemCultivares.total + ' amostras filtradas. Sem agrupamento de grafias diferentes.';
     preencherListaCultivares(document.getElementById('cultivarListaExpandida'));
-    nuvemCultivares.limparModal = observarNuvemCultivares(
-        document.getElementById('cultivarNuvemExpandida'), document.getElementById('cultivarCoberturaExpandida')
-    );
+    const area = document.getElementById('cultivarNuvemExpandida');
+    area.replaceChildren();
+    const maximo = nuvemCultivares.entradas[0]?.quantidade || 1;
+    nuvemCultivares.entradas.forEach((entrada, indice) => {
+        const linha = botaoCultivar(entrada);
+        linha.className = 'cultivar-ranking-linha';
+        const nome = document.createElement('span');
+        nome.className = 'cultivar-ranking-nome';
+        nome.textContent = entrada.nome;
+        const trilho = document.createElement('span');
+        trilho.className = 'cultivar-ranking-trilho';
+        trilho.setAttribute('aria-hidden', 'true');
+        const barra = document.createElement('span');
+        barra.style.width = `${entrada.quantidade / maximo * 100}%`;
+        barra.style.background = ['#754524', '#426441', '#bd883e', '#a88e70'][indice % 4];
+        trilho.append(barra);
+        const valor = document.createElement('span');
+        valor.className = 'cultivar-ranking-valor';
+        valor.textContent = `${entrada.quantidade} (${percentualCultivar(entrada.quantidade)})`;
+        linha.replaceChildren(nome, trilho, valor);
+        area.append(linha);
+    });
+    if (!nuvemCultivares.entradas.length) area.textContent = 'Nenhuma cultivar para os filtros selecionados.';
+    document.getElementById('cultivarCoberturaExpandida').textContent = 'Quantidade de amostras por cultivar. Selecione um nome para filtrar.';
 }
 function abrirModalCultivares() {
     const modal = document.getElementById('modalCultivares');

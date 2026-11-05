@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Painel de Gestão - Região Vulcânica</title>
+    <title>Painel de Gestão - Port</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
@@ -56,7 +56,10 @@
         #btnFiltrosAvancados { padding: .625rem 1.25rem !important; }
         header .w-12.h-12 { width: 40px !important; height: 40px !important; }
         header .bg-\[\#4A2E1B\] { padding-top: .625rem !important; padding-bottom: .625rem !important; }
-        #sidebar > div:first-child img { filter: grayscale(1) brightness(0) invert(1); opacity: .9; }
+        #sidebar > div:first-child { gap: 14px; }
+        #sidebar .sidebar-marca { display: block; flex: 1; min-width: 0; }
+        #sidebar > div:first-child img { display: block; width: 100%; height: auto; object-fit: contain; filter: none; opacity: 1; }
+        #sidebar > div:first-child > button { flex-shrink: 0; }
         header > div:first-child > img { filter: sepia(.9) saturate(1.5) brightness(.52); }
         #cultivarCloudContainer { border-radius: 14px; overflow: hidden; background: linear-gradient(90deg, rgba(255,255,255,.94) 0%, rgba(255,255,255,.88) 58%, rgba(255,255,255,.6) 100%), url('assets/img/sidebar_coffee_bg.jpg') left center / cover; }
 
@@ -110,13 +113,8 @@
     <!-- MENU LATERAL -->
     <aside id="sidebar" class="w-72 bg-white flex flex-col border-r border-stone-200 z-20 shrink-0 fixed h-screen top-0 left-0 transform transition-transform duration-300 ease-in-out shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
         <div class="p-6 border-b border-stone-100 flex justify-between items-center bg-white">
-            <a href="dashboard.html" aria-label="Região Vulcânica — Voltar ao início" title="Voltar ao início" class="flex items-center gap-3 rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400">
-                <img src="assets/img/logo.png" alt="Logo Região Vulcânica" class="w-14 h-14 object-contain">
-                <div class="flex flex-col">
-                    <span class="text-stone-900 font-black text-xs leading-none uppercase tracking-wider">Região</span>
-                    <span class="text-stone-900 font-black text-xs leading-none uppercase tracking-wider mt-0.5">Vulcânica</span>
-                    <span class="text-[#78350F] font-extrabold text-[8px] uppercase tracking-widest mt-1">Business Intelligence</span>
-                </div>
+            <a href="dashboard.html" aria-label="Port — Voltar ao início" title="Voltar ao início" class="sidebar-marca rounded-lg focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-amber-400">
+                <img src="assets/img/LOGO RV.png" alt="PORT — Portfólio Digital">
             </a>
             <button onclick="alternarSidebar()" class="w-7 h-7 rounded-full border border-stone-200 flex items-center justify-center text-stone-400 hover:text-stone-700 hover:bg-stone-50 transition shadow-sm" title="Recolher Menu">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" /></svg>
